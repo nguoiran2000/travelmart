@@ -1,0 +1,130 @@
+﻿<style type="text/css">
+  .form-horizontal input.ng-invalid.ng-dirty {
+    border-color: #FA787E;
+}
+
+.form-horizontal input.ng-valid.ng-dirty {
+    border-color: #78FA89;
+}
+</style>
+<div class="view">
+    <div class="container">
+        <div class="row">
+            <nav class="navbar navbar-default" role="navigation" >
+                <div class="navbar-header" >
+                    <a class="navbar-brand" href="/admin-tag"><i class="glyphicon glyphicon-th-large"></i> Tags List </a>
+                    <a ng-show="tag._id" class="navbar-brand" href="/admin-tag/edit-tag/0"><i class="glyphicon glyphicon-plus"></i> Create Tag </a>
+                    <a ng-show="tag._id" class="navbar-brand pull-right"><i class="glyphicon glyphicon-edit"></i> Currently Editing Tag Number: {{tag._id}}</a>
+                </div>
+            </nav>
+            <header>
+                <h3>{{title}}</h3>
+            </header>
+            <div class="col-md-12">
+
+                <form role="form" name="myForm" class="form-horizontal">
+                    <div class="row">
+
+                        <div class="form-group" ng-class="{error: error['title'] || myForm.title.$invalid, 'has-success': !error['title'],
+                'has-error': error['title']}">
+                            <label class="col-md-2"> Title </label>
+                            <div class="col-md-4">
+                                <input name="title" ng-model="tag.title" type="text" class="form-control" placeholder="Tag Title" required ng-change="slugify()"/>
+                                <span ng-show="myForm.title.$dirty && myForm.title.$invalid" class="help-inline">Title Required</span>
+                                <p class="help-block help-block-error">{{ error['title'] }}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{error: error['slug'] || myForm.slug.$invalid, 'has-success': !error['slug'],
+                'has-error': error['slug']}">
+                            <label class="col-md-2"> Slug </label>
+                            <div class="col-md-4">
+                                <input name="slug" ng-model="tag.slug" type="text" class="form-control" placeholder="Tag slug" required/>
+                                <span ng-show="myForm.slug.$dirty && myForm.slug.$invalid" class="help-inline">Slug Required</span>
+                                <p class="help-block help-block-error">{{ error['slug'] }}</p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2"> Image </label>
+                            <div class="col-md-4">
+                                <div ng-show="uploader.isHTML5">
+                                    <div nv-file-drop="" uploader="uploader">
+                                        <div nv-file-over uploader="uploader" class="well my-drop-zone">
+                                            Another drop zone with its own settings
+                                        </div>
+                                    </div>
+                                </div>
+                                <input name="image" ng-model="tag.image" type="file" nv-file-select="" uploader="uploader" /><br/>
+                                <div ng-repeat="item in uploader.queue">
+                                    <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
+                                    {{ item.file.size/1024/1024|number:2 }} MB
+                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                        <span class="glyphicon glyphicon-trash"></span> Remove
+                                    </button>
+                                </div>
+                                <div ng-show="tag.imageThumb">
+                                    <img class="img-responsive" ng-src="{{tag.imageThumb}}" alt="{{tag.name}}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2"> Description </label>
+                            <div class="col-md-4">
+                                <input name="description" ng-model="tag.description" type="text" class="form-control" placeholder="Enter Description"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-md-2">Content </label>
+                            <div class="col-md-10">
+                                <summernote ng-model="tag.content" config="options"></summernote>
+                            </div>
+                        </div>
+                        <uib-accordion close-others="oneAtATime">
+                            <div uib-accordion-group class="panel-default" is-open="status.open">
+                              <uib-accordion-heading>
+                                Meta Setting! <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                              </uib-accordion-heading>
+                        <div class="form-group">
+                            <label class="col-md-2"> Meta Title </label>
+                            <div class="col-md-4">
+                                <input name="description" ng-model="tag.meta_title" type="text" class="form-control" placeholder="Enter Meta Title"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2"> Meta Description </label>
+                            <div class="col-md-4">
+                                <input name="description" ng-model="tag.meta_description" type="text" class="form-control" placeholder="Enter Meta Description"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-2"> Meta Keywords </label>
+                            <div class="col-md-4">
+                                <input name="description" ng-model="tag.meta_keywords" type="text" class="form-control" placeholder="Enter Meta Keywords"/>
+                            </div>
+                        </div>
+                            </div>
+                        </uib-accordion>
+
+                        <div class="form-group">
+                            <label class="col-md-2"></label>
+                            <div class="col-md-4">
+                                <a href="/admin-tag" class="btn">Cancel</a>
+                                <button ng-click="saveTag(tag, 1);" 
+                                ng-disabled="isClean() || myForm.$invalid"
+                                class="btn btn-primary">Publish</button>
+                                <button ng-click="saveTag(tag, 0);" 
+                                ng-disabled="isClean() || myForm.$invalid"
+                                class="btn btn-primary">Save</button>
+                                <button ng-click="deleteTag(tag)"
+                                ng-show="tag._id" class="btn btn-warning">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,127 @@
+﻿<style type="text/css">
+  .form-horizontal input.ng-invalid.ng-dirty {
+    border-color: #FA787E;
+}
+
+.form-horizontal input.ng-valid.ng-dirty {
+    border-color: #78FA89;
+}
+</style>
+<div class="view">
+    <div class="container">
+        <div class="row">
+            <nav class= "navbar navbar-default" role= "navigation" >
+                <div class= "navbar-header" >
+                    <a class= "navbar-brand" href= "/services"><i class="glyphicon glyphicon-th-large"></i> Customers List </a>
+                    <a ng-show="customer._id" class= "navbar-brand" href= "/services/edit-customer/0"><i class="glyphicon glyphicon-plus"></i> Create Customer </a>
+                    <a ng-show="customer._id" class= "navbar-brand pull-right"><i class="glyphicon glyphicon-edit"></i> Currently Editing Customer Number: {{customer._id}}</a>
+                </div>
+            </nav>
+            <header>
+                <h3>{{title}}</h3>
+            </header>
+            <div class="col-md-12">
+
+                <form role="form" name="myForm" class="form-horizontal">
+                    <div class="row">
+                        <div class= "form-group" ng-class="{error: myForm.customerName.$invalid}">
+                            <label class= "col-md-2"> Name </label>
+                            <div class="col-md-4">
+                                <input name="customerName" ng-model="customer.customerName" type="text" class= "form-control" placeholder="Your name" required ng-change="slugify()"/>
+                                <span ng-show="myForm.customerName.$dirty && myForm.customerName.$invalid" class="help-inline">Name Required</span>
+                            </div>
+                        </div>
+                        <div class= "form-group" ng-class="{error: myForm.slug.$invalid}">
+                            <label class= "col-md-2"> Slug </label>
+                            <div class="col-md-4">
+                                <input name="slug" ng-model="customer.slug" type= "text" class= "form-control" placeholder="Your name slug" required/>
+
+                                <span ng-show="myForm.slug.$dirty && myForm.slug.$invalid" class="help-inline">Slug Required</span>
+                            </div>
+                        </div>
+
+                        <div class= "form-group">
+                            <label class= "col-md-2"> Avatar </label>
+                            <div class="col-md-4">
+
+                                <div ng-show="uploader.isHTML5">
+                                    <div nv-file-drop="" uploader="uploader">
+                                        <div nv-file-over uploader="uploader" class="well my-drop-zone">
+                                            Another drop zone with its own settings
+                                        </div>
+                                    </div>
+                                </div>
+                                <input name="image" ng-model="customer.image" type="file" nv-file-select="" uploader="uploader" /><br/>
+                                <div ng-repeat="item in uploader.queue">
+                                   <div ng-show="uploader.isHTML5" ng-thumb="{ file: item._file, height: 100 }"></div>
+                                   {{ item.file.size/1024/1024|number:2 }} MB
+                                   <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                    <span class="glyphicon glyphicon-trash"></span> Remove
+                                </button>
+                            </div>
+                            <div ng-show="customer.imageThumb"><img class="img-responsive" ng-src="{{customer.imageThumb}}" alt="{{customer.customerName}}" /></div>
+
+                        </div>
+                    </div>
+
+                        <div class= "form-group">
+                            <label class= "col-md-2"> Email address </label>
+                            <div class="col-md-4">
+                                <input name="email" ng-model="customer.email" type= "email" class= "form-control" placeholder="Enter email" required/>
+                                <span ng-show="myForm.email.$dirty && myForm.email.$invalid && !myForm.email.$error.email" class="help-inline">Email Required</span>
+                                <span ng-show="myForm.email.$error.email" class="help-inline">Email is not valid</span>
+                            </div>
+                        </div>
+                        <div class= "form-group">
+                            <label class= "col-md-2">Address </label>
+                            <div class="col-md-4">
+                                <input ng-model="customer.address" type= "text" class= "form-control" placeholder= "Present Address"/>
+                            </div>
+                        </div>
+                        <div class= "form-group">
+                            <label class= "col-md-2">City </label>
+                            <div class="col-md-4">
+                                <input ng-model="customer.city" type= "text" class= "form-control" placeholder= "Current City"/>
+                            </div>
+                        </div>
+                        <div class= "form-group">
+                            <label class= "col-md-2">Country </label>
+                            <div class="col-md-4">
+                                <input ng-model="customer.country" type= "text" class= "form-control" placeholder= "Residing Country"/>
+                            </div>
+                        </div>
+                        <div class= "form-group">
+                            <label class= "col-md-2">Content </label>
+                            <div class="col-md-4">
+                                <summernote ng-model="customer.content" config="options"></summernote>
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class= "col-md-2">Status </label>
+                            <div class="col-md-4">
+                                <input type="checkbox"
+                                class= "form-control"
+                                ng-model="customer.status"
+                                ng-init="customer.status=true"
+                                >
+                            </div>
+                        </div>
+                        <div class= "form-group">
+                            <label class= "col-md-2"></label>
+                            <div class="col-md-4">
+                                <a href="/services" class="btn">Cancel</a>
+                                <button ng-click="saveCustomer(customer);" 
+                                ng-disabled="isClean() || myForm.$invalid"
+                                class="btn btn-primary">{{buttonText}}</button>
+                                <button ng-click="deleteCustomer(customer)"
+                                ng-show="customer._id" class="btn btn-warning">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div></div>
+        </div>
+    </div>

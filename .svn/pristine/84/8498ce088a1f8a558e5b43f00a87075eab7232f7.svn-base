@@ -1,0 +1,47 @@
+<h1>Category</h1>
+
+<p>Please fill out the following fields to category:</p>
+
+<div class="row">
+    <div class="col-lg-5">
+        <form ng-submit="category_form()" name="categoryForm" id="category-form" method="post" role="form" >
+
+            <div ng-class="{ 'has-success': !error['name'] && submitted,
+                'has-error': error['name'] && submitted }"
+                 class="form-group field-categoryform-name">
+                <label class="control-label" for="categoryform-name">Name</label>
+                <input ng-model="categoryModel.name" type="text" id="categoryform-name" class="form-control">
+                <p class="help-block help-block-error">{{ error['name'] }}</p>
+            </div>
+
+            <div ng-class="{ 'has-success': !error['description'] && submitted,
+                'has-error': error['description'] && submitted }"
+                 class="form-group field-categoryform-description required">
+                <label class="control-label" for="categoryform-description">Description</label>
+                <textarea ng-model="categoryModel.description" type="text" id="categoryform-description" class="form-control">
+                <p class="help-block help-block-error">{{ error['description'] }}</p>
+            </div>
+
+            <div ng-class="{ 'has-success': !error['username'] && submitted,
+                'has-error': error['username'] && submitted }"
+                 class="form-group field-registerform-username required">
+                <label class="control-label" for="registerform-username">Username</label>
+                <input ng-model="userModel.username" type="text" id="registerform-username" class="form-control">
+                <p class="help-block help-block-error">{{ error['username'] }}</p>
+            </div>
+
+            <div ng-class="{ 'has-success': !error['newPassword'] && submitted,
+                'has-error': error['newPassword'] && submitted }"
+                 class="form-group field-registerform-newPassword required">
+                <label class="control-label" for="registerform-newPassword">newPassword</label>
+                <input ng-model="userModel.newPassword" type="newPassword" id="registerform-newPassword" class="form-control">
+                <p class="help-block help-block-error">{{ error['newPassword'] }}</p>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" name="register-button">Register</button>
+            </div>
+
+        </form>
+    </div>
+</div>

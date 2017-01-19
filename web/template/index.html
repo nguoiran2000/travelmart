@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<!-- define angular app -->
+<html ng-app="scotchApp">
+
+<head>
+  <!-- SCROLLS -->
+  <link rel="stylesheet" href="../scripts/font-awesome.css" />
+  <link rel="stylesheet" href="../scripts/angular-material/angular-material.min.css" />
+  <link rel="stylesheet" href="../scripts/angular-carousel/dist/angular-carousel.min.css" />
+  <link rel="stylesheet" href="../scripts/angular-jk-rating-stars/jk-rating-stars.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<!-- define angular controller -->
+<body ng-controller="mainController">
+
+    <md-toolbar scroll-header class="md-toolbar-menu" layout="row" layout-align="center" md-colors="{background: 'white'}">
+        <div flex class="layout-max-width" layout="row">
+            <div class="md-toolbar-tools">
+                <md-button class="md-icon-button md-primary" ng-click="toggleLeft()" hide-gt-sm aria-label="Menu">
+                    <md-icon md-svg-src="img/icons/menu.svg"></md-icon>
+                </md-button>
+                <a href="/" ng-show="!showSearch">My Company</a>
+                <span flex ng-show="!showSearch"></span>
+                <md-input-container flex ng-show="showSearch">
+                    <label>&nbsp;</label>
+                    <input ng-model="search.who" placeholder="Search">
+                </md-input-container>
+                <div ng-show="!showSearch" show-gt-sm hide>
+                    <md-button href="#"><i class="fa fa-home"></i> Home</md-button>
+                    <md-button href="#about"><i class="fa fa-shield"></i> About</md-button>
+                    <md-button href="#contact"><i class="fa fa-comment"></i> Contact</md-button>
+                </div>
+                <md-button class="md-button-search" aria-label="Search" ng-click="showSearch = !showSearch">
+                    <i class="fa fa-search"></i>
+                </md-button>
+                <div class="md-button-login">
+                <md-button class="md-fab" ng-click="toggleRight()"><i class="fa fa-user"></i> Login</md-button>
+                </div>
+            </div>
+        </div>
+    </md-toolbar>
+
+<md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left">
+      <md-toolbar class="md-tall" md-colors="{background: 'emerald-green'}">
+        <span flex></span>
+        <div layout="column" class="md-toolbar-tools-bottom inset">
+          <user-avatar></user-avatar>
+          <span></span>
+          <div>Firstname Lastname</div>
+          <div>email@domainname.com</div>
+        </div>
+      </md-toolbar>
+      <md-list>
+      <md-list-item>
+        <a href="#">
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <i class="fa fa-home"></i>
+            </div>
+            <div class="inset">Home
+            </div>
+          </md-item-content>
+        </a>
+      </md-list-item>
+      <md-list-item>
+        <a href="#">
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <i class="fa fa-shield"></i>
+            </div>
+            <div class="inset">About
+            </div>
+          </md-item-content>
+        </a>
+      </md-list-item>
+      <md-list-item>
+        <a href="#">
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <i class="fa fa-comment"></i>
+            </div>
+            <div class="inset">Contact
+            </div>
+          </md-item-content>
+        </a>
+      </md-list-item>
+      <md-divider></md-divider>
+      <md-subheader>Management</md-subheader>
+      <md-item ng-repeat="item in admin">
+        <a>
+          <md-item-content md-ink-ripple layout="row" layout-align="start center">
+            <div class="inset">
+              <ng-md-icon icon="{{item.icon}}"></ng-md-icon>
+            </div>
+            <div class="inset">{{item.title}}
+            </div>
+          </md-item-content>
+        </a>
+      </md-item>
+    </md-list>
+    </md-sidenav>
+
+    <md-sidenav class="md-sidenav-right md-whiteframe-4dp jumbotron" md-component-id="right">
+        <md-toolbar md-colors="{background: 'emerald-green'}">
+            <h5 class="md-toolbar-tools">Signin</h5>
+        </md-toolbar>
+        <md-content ng-controller="RightCtrl" layout-padding>
+            <form>
+                <md-input-container>
+                    <label for="accountInput">Account</label>
+                    <input type="text" id="accountInput"
+                    ng-model="account" md-autofocus>
+                </md-input-container>
+                <md-input-container>
+                    <label for="passwordInput">Password</label>
+                    <input type="password" id="passwordInput"
+                    ng-model="password">
+                </md-input-container>
+            </form>
+            <md-button>
+                Login
+            </md-button>
+            <md-button ng-click="close()" class="md-primary">
+                Close
+            </md-button>
+        </md-content>
+    </md-sidenav>
+
+<div id="main" layout="column" ng-cloak>
+
+    <!-- angular templating -->
+    <!-- this is where content will be injected -->
+    <div ng-view></div>
+
+</div>
+
+<md-toolbar layout="row" layout-align="center start" style="background-image: url(http://vivivu.vn/uploads/Blog/11/1457082301.png)">
+    <div class="backdrop"></div>
+    <div class="layout-max-width" style="margin-top: 50px; margin-bottom: 50px">
+        <div layout="column" layout-align="center center" style="padding-bottom: 30px;border-bottom: 1px solid rgba(255,255,255,0.3);margin-bottom: 40px;">
+            <md-headline>Single Action Checkboxes</md-headline>
+            <form layout="row" layout-align="center center">
+                <md-input-container class="md-block">
+                    <!-- Use floating placeholder instead of label -->
+                    <md-icon md-svg-src="img/icons/message-closed-envelope.svg" class="email"></md-icon>
+                    <input ng-model="user.email" type="email" placeholder="Email (required)" ng-required="true">
+                </md-input-container>
+                <md-button class="md-raised md-warn">SUBSCRIBE</md-button>
+            </form>
+        </div>
+        <div layout="row" layout-wrap>
+            <div flex="33">
+                <md-headline>Header</md-headline>
+                <ul>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                </ul>
+            </div>
+            <div flex="33">
+                <md-headline>Header</md-headline>
+                <ul>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                    <li>Aliquan quis</li>
+                </ul>
+            </div>
+            <div flex="33" layout="column" layout-align="end" layout-wrap>
+                <div layout="column" layout-align="start" flex>
+                    <md-headline>Header</md-headline>
+                    <p>
+                    <md-button href="http://google.com"
+                     title="Launch Google.com in new window"
+                     target="_blank"
+                     aria-label="Google.com"
+                     class="md-icon-button launch" >
+                        <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                        </md-button>
+                        <md-button href="http://google.com"
+                     title="Launch Google.com in new window"
+                     target="_blank"
+                     aria-label="Google.com"
+                     class="md-icon-button launch" >
+                        <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                        </md-button>
+                        <md-button href="http://google.com"
+                     title="Launch Google.com in new window"
+                     target="_blank"
+                     aria-label="Google.com"
+                     class="md-icon-button launch" >
+                        <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                        </md-button>
+                    </p>
+                </div>
+                <div layout="row" layout-align="end end" flex>
+                    Copyright © All Rights reserved
+                </div>
+            </div>
+        </div>
+    </div>
+</md-toolbar>
+
+
+<!-- SPELLS -->
+<script src="../scripts/angular/angular.min.js"></script>
+<script src="../scripts/angular-route.min.js"></script>
+<script src="../scripts/angular-animate.min.js"></script>
+<script src="../scripts/angular-aria/angular-aria.min.js"></script>
+<script src="../scripts/angular-messages/angular-messages.min.js"></script>
+<script src="../scripts/angular-material/angular-material.min.js"></script>
+<script src="../scripts/angular-touch/angular-touch.min.js"></script>
+<script src="../scripts/angular-carousel/dist/angular-carousel.min.js"></script>
+<script src="../scripts/angular-jk-rating-stars/jk-rating-stars.min.js"></script>
+<script src="script.js"></script>
+</body>
+
+</html>

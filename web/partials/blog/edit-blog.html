@@ -1,0 +1,95 @@
+﻿<form name="blogForm">
+    <md-content layout-padding>
+
+        <md-input-container>
+            <label>Category</label>
+            <md-select ng-model="blog.category_id">
+                <md-optgroup label="{{key}}" ng-repeat="(key, items) in blog.categories | groupBy: 'parent_id'">
+                    <md-option ng-value="item.id" ng-repeat="item in items">{{item.name}}</md-option>
+                </md-optgroup>
+            </md-select>
+        </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Title</label>
+            <input name="title" ng-model="blog.title" required ng-change="slugify()">
+            <div ng-messages="blogForm.title.$error || error['slug']">
+                <div ng-message="required">This is required.</div>
+                <p class="help-block help-block-error">{{ error['slug'] }}</p>
+            </div>
+        </md-input-container>
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Slug</label>
+            <input name="slug" ng-model="blog.slug" type="text" required/>
+            <div ng-messages="blogForm.slug.$error || error['slug']">
+                <div ng-message="required">This is required.</div>
+                <p class="help-block help-block-error">{{ error['slug'] }}</p>
+            </div>
+        </md-input-container>
+
+        <lf-ng-md-file-input name="file" lf-files='blog.image' lf-api="api"> </lf-ng-md-file-input>
+
+        <img style="max-width: 200px" ng-show="blog.imageThumb" class="img-responsive" ng-src="{{blog.imageThumb}}" alt="{{blog.title}}" />
+
+        <md-input-container class="md-block">
+            <label>Description</label>
+            <textarea ng-model="blog.description" md-maxlength="255" rows="5"></textarea>
+        </md-input-container>
+
+        <text-angular ng-model="blog.content"></text-angular>
+
+        
+
+        <div layout-gt-sm="row">
+            <md-switch ng-model="blog.status" ng-true-value="1" ng-false-value="0" aria-label="Status" class="md-block" flex-gt-sm>Status</md-switch>
+            <md-switch ng-model="blog.hot" ng-true-value="1" ng-false-value="0" aria-label="Hot" class="md-block" flex-gt-sm>Hot</md-switch>
+        </div>
+
+        <md-chips ng-model="blog.tag" md-autocomplete-snap
+              md-transform-chip="ctrl.transformChip($chip)"
+              md-require-match="true">
+              <md-autocomplete
+                  md-selected-item="ctrl.selectedItem"
+                  md-search-text="ctrl.searchText"
+                  md-items="item in ctrl.querySearch(ctrl.searchText)"
+                  md-selected-item-change="ctrl.selectedItemChange(item)"
+                  md-item-text="item.title"
+                  md-min-length="1"
+                  placeholder="Search for a Tag">
+                <span md-highlight-text="ctrl.searchText">{{item.title}}</span>
+              </md-autocomplete>
+              <md-chip-template>
+                <span>
+                  <strong>{{$chip.title}}</strong>
+                </span>
+              </md-chip-template>
+        </md-chips>
+
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Meta Title</label>
+            <input name="meta_title" ng-model="blog.meta_title">
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Meta Description</label>
+            <input name="meta_description" ng-model="blog.meta_description">
+        </md-input-container>
+        <md-input-container class="md-block" flex-gt-sm>
+            <label>Meta Keywords</label>
+            <input name="meta_keywords" ng-model="blog.meta_keywords">
+        </md-input-container>
+        
+    </md-content>
+
+    <md-toolbar layout="row" md-colors="{background: 'emerald-green'}">
+        <md-button ui-sref="adminBlog">Cancel</md-button>
+        <div confirm-delete on-confirm="deleteBlog(blog.id)" ng-show="blog._id"></div>
+        <md-button ng-click="saveBlog(blog, 1)" ng-disabled="blogForm.$invalid">
+            Publish
+        </md-button>
+        <md-button ng-click="saveBlog(blog, 0)" ng-disabled="blogForm.$invalid">
+            Save
+        </md-button>
+    </md-toolbar>
+
+</form>

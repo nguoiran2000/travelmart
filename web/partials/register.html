@@ -1,0 +1,43 @@
+<form ng-submit="register(userModel)" name="registerForm" id="register-form" method="post" role="form">
+
+    <md-input-container class="md-block">
+        <label>Fullname</label>
+        <md-icon class="md-button-icon"><i class="fa fa-user" aria-hidden="true"></i></md-icon>
+        <input ng-model="userModel.full_name" md-autofocus>
+        <p ng-show="error['full_name']">{{ error['full_name'] }}</p>
+    </md-input-container>
+
+    <md-input-container class="md-block">
+        <label>Email</label>
+        <md-icon class="md-button-icon"><i class="fa fa-envelope" aria-hidden="true"></i></md-icon>
+        <input type="email" name="email" ng-model="userModel.email" required ng-pattern="/^.+@.+\..+$/">
+        <div ng-messages="registerForm.email.$error || error['email']">
+            <div ng-message-exp="['required', 'pattern']">Your email must be look like an e-mail address.</div>
+            <p ng-show="error['email']">{{ error['email'] }}</p>
+        </div>
+        
+    </md-input-container>
+
+    <md-input-container class="md-block">
+        <label>Username</label>
+        <md-icon class="md-button-icon"><i class="fa fa-user" aria-hidden="true"></i></md-icon>
+        <input ng-model="userModel.username" required name="username">
+        <div ng-messages="registerForm.username.$error || error['username']">
+            <div ng-message="required">This is required.</div>
+            <p ng-show="error['username']">{{ error['username'] }}</p>
+        </div>
+    </md-input-container>
+    
+    <md-input-container class="md-block">
+        <label>Password</label>
+        <md-icon class="md-button-icon"><i class="fa fa-lock" aria-hidden="true"></i></md-icon>
+        <input type="password" ng-model="userModel.newPassword" required name="newPassword">
+        <div ng-messages="registerForm.newPassword.$error || error['newPassword']">
+            <div ng-message="required">This is required.</div>
+            <p ng-show="error['newPassword']">{{ error['newPassword'] }}</p>
+        </div>
+    </md-input-container>
+
+    <md-button ng-disabled="submitted" type="submit" class="md-primary" name="register-button">Register</md-button>
+
+</form>

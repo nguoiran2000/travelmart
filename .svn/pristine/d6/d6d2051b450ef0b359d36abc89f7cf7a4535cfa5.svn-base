@@ -1,0 +1,58 @@
+<?php
+/**
+ * @link http://www.yiiframework.com/
+ * @copyright Copyright (c) 2008 Yii Software LLC
+ * @license http://www.yiiframework.com/license/
+ */
+
+namespace app\assets;
+
+use yii\web\AssetBundle;
+use yii\web\View;
+
+/**
+ * @author Qiang Xue <qiang.xue@gmail.com>
+ * @since 2.0
+ */
+class AppAsset extends AssetBundle
+{
+    public $basePath = '@webroot';
+    public $baseUrl = '@web';
+    public $css = [
+        'css/site.css',
+        'scripts/summernote/dist/summernote.css',
+        'scripts/select2/select2.css',
+        'scripts/angular-carousel/dist/angular-carousel.min.css',
+    ];
+    public $js = [
+        'js/app.js',
+        'js/controllers.js',
+        'scripts/summernote/dist/summernote.min.js',
+        'scripts/summernote/dist/lang/summernote-vi-VN.min.js',
+        'scripts/angular-summernote/src/angular-summernote.js',
+        'scripts/bootstrap/dist/js/bootstrap.min.js',
+        'scripts/angular-slugify/angular-slugify.js',
+        'scripts/angular-file-upload/dist/angular-file-upload.min.js',
+        'scripts/select2/select2.min.js',
+        'scripts/select2/select2_locale_vi.js',
+        'scripts/angular-ui-select2/src/select2.js',
+        'scripts/TweenMax.min.js',
+        'scripts/angular-animate.min.js',
+        'scripts/ui-bootstrap-tpls-2.1.3.min.js',
+        'scripts/angular-sanitize.min.js',
+        'scripts/angular-carousel/dist/angular-carousel.min.js',
+        'scripts/angular-ui-router.min.js',
+        'scripts/angular-aria/angular-aria.min.js',
+        'scripts/angular-messages/angular-messages.min.js',
+        'scripts/angular-material/angular-material.min.js',
+
+    ];
+    public $depends = [
+        'yii\web\YiiAsset',
+        'yii\bootstrap\BootstrapAsset',
+        'app\assets\AngularAsset',
+    ];
+    public $jsOptions = [
+        'position' => View::POS_HEAD,
+    ];
+}

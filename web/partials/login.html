@@ -1,0 +1,38 @@
+<form ng-submit="login()" name="loginForm" id="login-form" method="post" role="form" >
+
+    <md-input-container ng-class="{ 'has-success': !error['email'] && submitted,
+        'has-error': error['email'] && submitted }"
+        class="md-block field-loginform-email required">
+        <label for="loginform-email">Account</label>
+        <input required type="text" id="loginform-email" name="loginformEmail"
+        ng-model="userModel.email" md-autofocus>
+        <div ng-messages="loginForm.loginformEmail.$error">
+            <div ng-message="required">{{ error['email'] }}</div>
+        </div>
+    </md-input-container>
+
+    <md-input-container ng-class="{ 'has-success': !error['password'] && submitted,
+        'has-error': error['password'] && submitted }"
+        class="md-block field-loginform-password required">
+        <label for="loginform-password">Password</label>
+        <input required type="password" id="loginform-password" name="loginformPassword"
+        ng-model="userModel.password">
+        <div ng-messages="loginForm.loginformPassword.$error">
+            <div ng-message="required">{{ error['password'] }}</div>
+        </div>
+    </md-input-container>
+
+    <div layout="row">
+        <md-checkbox ng-model="userModel.rememberMe" aria-label="rememberMe" id="loginform-rememberMe">
+            rememberMe
+        </md-checkbox>
+    </div>
+
+    <md-button type="submit">
+        Login
+    </md-button>
+    <md-button ng-click="close()" class="md-primary">
+        Close
+    </md-button>
+
+</form>

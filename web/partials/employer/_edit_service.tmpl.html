@@ -1,0 +1,96 @@
+<md-dialog aria-label="{{ service.id ? 'Update ' + service.title : 'Create Service' }}">
+	<form ng-cloak name="serviceForm" role="form">
+
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ service.id ? 'Update ' + service.title : 'Create Service' }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					X
+				</md-button>
+			</div>
+		</md-toolbar>
+
+		<md-dialog-content>
+			<div class="md-dialog-content">
+
+            <md-autocomplete
+	            md-selected-item="ctrl.selectedItem"
+	            md-search-text="ctrl.searchText"
+	            md-items="item in ctrl.querySearch(ctrl.searchText)"
+	            md-item-text="item.title"
+	            md-min-length="0"
+	            placeholder="Service?"
+	            ng-disabled="loading"
+	            md-selected-item-change="service.base_service.metas = item.metas ; service.parent_id = item.id"
+	            ng-show="!service.id">
+	          <md-item-template>
+	            <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.title}}</span>
+	          </md-item-template>
+	          <md-not-found>
+	            No Services matching "{{ctrl.searchText}}" were found.
+	          </md-not-found>
+	        </md-autocomplete>
+	        <h2 class="md-header" ng-show="service.id">{{service.base_service.title}}</h2>
+
+	        <div layout-gt-sm="row">
+	            <md-input-container class="md-block" flex-gt-sm>
+	                <label>Name</label>
+	                <input name="name" ng-model="service.name" required>
+	                <div ng-messages="serviceForm.name.$error">
+	                    <div ng-message="required">This is required.</div>
+	                </div>
+	            </md-input-container>
+
+	            <md-input-container class="md-block" flex-gt-sm>
+	                <label>Title</label>
+	                <input name="title" ng-model="service.title" required>
+	                <div ng-messages="serviceForm.title.$error">
+	                    <div ng-message="required">This is required.</div>
+	                </div>
+	            </md-input-container>
+	        </div>
+
+	        <md-input-container class="md-block" flex-gt-sm>
+                <label>Price</label>
+                <input name="price" ng-model="service.price" type="number">
+            </md-input-container>
+
+	        <md-switch ng-model="service.hot" ng-true-value="1" ng-false-value="0" aria-label="Hot" class="md-block" flex-gt-sm>Hot</md-switch>
+
+	        <label>Avatar</label>
+	        <lf-ng-md-file-input name="file" lf-files='service.image'> </lf-ng-md-file-input>
+
+        	<img style="max-width: 200px" ng-show="service.imageThumb" class="img-responsive" ng-src="{{service.imageThumb}}" alt="{{service.title}}" />
+
+        	<md-content md-theme="docs-dark" layout-gt-sm="column" layout-padding>
+				<label>Gallery:</label>
+				<lf-ng-md-file-input name="gallery" lf-files='service.gallery' lf-drag-and-drop-label="Drag and Drop here!" drag preview multiple></lf-ng-md-file-input>
+			</md-content>
+
+			<md-input-container class="md-block">
+				<label>Description</label>
+				<textarea name="description" ng-model="service.description" md-maxlength="150" rows="5" md-select-on-focus md-minlength="50" required></textarea>
+				<div ng-messages="error['description'] || serviceForm.description.$error" role="alert">
+					<div ng-message-exp="['required', 'minlength']">
+		            	Your description must be up 50 characters long.
+		          	</div>
+		        </div>
+			</md-input-container>
+
+			<md-content ng-include="ctrl.service_template.url">
+			</md-content>
+
+			</div>
+		</md-dialog-content>
+
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<div confirm-delete on-confirm="delete(service.id)" ng-show="service.id"></div>
+			<md-button ng-click="serviceForm.$valid && edit(service)">
+				Save
+			</md-button>
+		</md-dialog-actions>
+
+	</form>
+</md-dialog>

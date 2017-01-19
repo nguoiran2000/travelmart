@@ -1,0 +1,481 @@
+<div class="jumbotron text-center">
+    <div class="slideshow back-drop">
+        <ul rn-carousel class="image" style="height: 300px" rn-carousel-index="slideshow">
+            <li ng-repeat="item in home.slideshow">
+                <div class="layer col-md-12 bgimage ng-binding" ng-style="{'background-image': 'url(' + item.imageThumb + ')'}" style="height: 300px;">
+                </div>
+
+                <md-card class="caption" md-theme="docs-dark" layout-padding layout="column" layout-align="center center">
+                    <form name="myForm">
+                        <span class="md-headline">{{item.title}}</span>
+
+                        <div layout="row" layout-align="start" flex>
+                            <md-input-container flex="50">
+                                <label>Quest</label>
+                                <input type="text" name="quest" ng-model="quest" required />
+                            </md-input-container>
+
+                            <md-input-container flex="50">
+                                <label>Favorite Color</label>
+                                <md-select name="favoriteColor" ng-model="favoriteColor" required>
+                                    <md-option value="red">Red</md-option>
+                                    <md-option value="blue">Blue</md-option>
+                                    <md-option value="green">Green</md-option>
+                                </md-select>
+                                <div class="errors" ng-messages="myForm.favoriteColor.$error">
+                                    <div ng-message="required">Required</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <div layout="row" layout-align="center">
+                            <md-checkbox>Filter 1</md-checkbox>
+                            <md-checkbox>Filter 2</md-checkbox>
+                        </div>
+
+                        <div layout="row" layout-align="center" flex>
+                            <md-button class="md-raised md-warn">Search</md-button>
+                        </div>
+                    </form>
+                </md-card>
+            </li>
+        </ul>
+    </div>
+
+    <md-toolbar layout="row" layout-align="center start" md-colors="{background: 'white'}">
+        <div flex class="layout-max-width" layout="row">
+            <div class="md-toolbar-tools">
+
+                <div layout="row">
+      <md-input-container style="margin-right: 10px;">
+        <label>Sorting</label>
+        <md-select ng-model="searchData.sort" ng-change="searchEmployer()">
+            <md-option><em>None</em></md-option>
+          <md-option value="price_asc">Giá: từ thấp đến cao</md-option>
+          <md-option value="price_desc">Giá: từ cao đến thấp</md-option>
+          <md-option value="view_count">Lượt xem</md-option>
+        </md-select>
+      </md-input-container>
+      <md-input-container style="margin-right: 10px;max-width: 200px;">
+        <label>City</label>
+        <md-select ng-model="searchData.city_id" multiple ng-change="searchEmployer()">
+          <md-optgroup label="City">
+            <md-option ng-value="item.id" ng-repeat="item in home.city">{{item.name}}</md-option>
+          </md-optgroup>
+        </md-select>
+      </md-input-container>
+    </div>
+        <div layout="column">
+                <md-autocomplete
+          md-selected-item="ctrl.selectedItem"
+          md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+          md-search-text="ctrl.searchText"
+          md-selected-item-change="ctrl.selectedItemChange(item)"
+          md-items="item in ctrl.querySearch(ctrl.searchText)"
+          md-item-text="item.display"
+          md-min-length="0"
+          placeholder="What is your favorite US state?">
+        
+        <md-item-template>
+          <span class="item-title">
+            <md-icon md-svg-icon="/img/icons/house-outline.svg"></md-icon>
+            <span> {{item.display}} </span>
+          </span>
+          <span class="item-metadata">
+            <span class="item-metastat">
+              <strong>{{item.display}}</strong> watchers
+            </span>
+            <span class="item-metastat">
+              <strong>{{item.display}}</strong> forks
+            </span>
+          </span>
+        </md-item-template>
+        <md-not-found>
+          No states matching "{{ctrl.searchText}}" were found.
+          <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+        </md-not-found>
+      </md-autocomplete>
+        </div>
+                <span flex></span>
+                
+                <md-button class="md-fab md-mini" aria-label="Favorite">
+                    <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+                </md-button>
+                <md-button class="md-icon-button" aria-label="Show Map" ng-click="searhLocation = !searhLocation">
+                    <i class="fa fa-map-marker"></i>
+                </md-button>
+                <md-button class="md-fab md-mini" md-colors="{background: 'orange'}" aria-label="Favorite">
+                    <md-icon md-svg-src="img/icons/house-outline.svg"></md-icon>
+                </md-button>
+            </div>
+        </div>
+    </md-toolbar>
+
+    <div flex layout="column" layout-align="center center" md-colors="{background: 'white'}" ng-show="searhLocation">
+        <md-nav-bar md-selected-nav-item="currentNavItem" nav-bar-aria-label="navigation links">
+            <md-nav-item md-nav-click="goto('search1')" name="search1">Địa điểm</md-nav-item>
+            <md-nav-item md-nav-click="goto('search2')" name="search2">Điểm đến</md-nav-item>
+        </md-nav-bar>
+        <div class="list-city layout-max-width" layout="row" layout-xs="column">
+            <div flex="20" ng-repeat="item in home.city | chunk:9" ng-show="currentNavItem == 'search1'">
+                <md-list-item ng-repeat="city in item" ng-click="toggle(city.id, searchData.city_id)">
+                    <md-checkbox ng-checked="exists(city.id, searchData.city_id)" ng-click="toggle(city.id, searchData.city_id)" arial-label="false"></md-checkbox>
+                    <p>{{city.name}}</p>
+                </md-list-item>
+            </div>
+            <div flex="30" ng-repeat="item in home.locations | chunk:9" ng-show="currentNavItem == 'search2'">
+                <md-list-item ng-repeat="location in item" ng-click="toggle(location.id, searchData.parent_id)">
+                    <md-checkbox ng-checked="exists(location.id, searchData.parent_id)" ng-click="toggle(location.id, searchData.parent_id)" arial-label="false"></md-checkbox>
+                    <p>{{location.title}}</p>
+                </md-list-item>
+            </div>
+        </div>
+    </div>
+
+    <div flex layout="row" layout-align="center">
+        <div class="layout-max-width">
+            <md-grid-list
+            md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+            md-row-height-gt-md="1:1.2" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+            md-gutter="8px" md-gutter-gt-sm="4px" >
+
+            <md-grid-tile ng-repeat="item in home.employers"
+            md-rowspan="4"
+            md-colspan="3"
+            md-colspan-sm="1"
+            md-colspan-xs="1">
+            <md-grid-tile-header style="height: auto;background: none;">
+            <md-card class="card-location" layout-align="center">
+                <div class="card-rating badge" layout="row" layout-align="center" style="position: absolute;left: 5px;top: 5px;color: #fff;">
+                    <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                    <small> ({{item.view_count}})</small>
+                </div>
+                <span ng-show="item.price != 0" class="badge card-price" ng-style="{'background-color': item.color}" style="color:#fff">
+                    {{item.price}}
+                </span>
+                <img 
+                ng-mouseenter="cardActions=true"
+                ng-src="{{item.imageThumb}}" class="md-card-image {{item.limitHeight}}" alt="Washed Out">
+
+                <md-card-button ng-mouseleave="cardActions=false" ng-show="cardActions" layout="column" class="card-actions" layout-align="start center">
+                    <md-button aria-label="{{item.title}}" class="card-showmore md-raised" ui-sref="employerView({employerSlug: item.slug})" style="margin-top: 15%;">
+                        <i class="fa fa-search fa-lg"></i> Show more
+                    </md-button>
+                    <div layout="row">
+                        <jk-rating-stars></jk-rating-stars>
+                        <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                    </div>
+                </md-card-button>
+
+                <md-card-title class="card-content" layout-align="center" ng-style="{'background-color': item.color}">
+                    <md-button class="md-fab card-type" aria-label="{{item.title}}" ng-style="{'background-color': item.color}">
+                        <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                    </md-button>
+
+                </md-card-title>
+
+                <md-card-title class="card-title" style="padding-bottom: 0;">
+                    <md-card-title-text>
+                        <span class="md-headline">{{item.title}}</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <ul style="padding-left: 25px;">
+                    <li ng-repeat="service in item.services" style="margin-bottom: 4px;">
+                    <a ui-sref="employerView.viewService({employerSlug: item.slug, serviceID:service.id, serviceSlug: (service.title | slugify)})" ng-style="{'color': service.base_service.color}">{{service.title}}</a>
+                    </li>
+                </ul>
+
+                <md-card-title class="card-description" ng-show="item.span.col == 6">
+                    <md-button class="md-fab card-avatar" aria-label="Favorite" ng-style="{'background-color': item.color}">
+                        <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                    </md-button>
+                    <md-card-header-text class="card-info" layout="column" layout-align="start start">
+                        <jk-rating-stars class="card-rating-md" rating="4" read-only="true" ></jk-rating-stars>
+                        <span class="md-title">Lucy-P</span>
+                        <span class="md-subhead">“Aliquam quis pulvinar purus. Etiam cursus ipsum quis enim faucibus, quis posuere orci ornare. Duis mattis sagittis fringilla.” ... <a href="#/" class="readmore">Readmore</a></span>
+                    </md-card-header-text>
+                </md-card-title>
+
+            </md-card>
+            </md-grid-tile-header>
+        </md-grid-tile>
+    </md-grid-list>
+
+    <md-input-container layout="row" layout-align="center center">
+        <md-button class="loadmore">Load more <i class="fa fa-chevron-down" aria-hidden="true"></i></md-button>
+    </md-input-container>
+
+    <div class="break-line"></div>
+
+</div>
+</div>
+
+
+
+<div flex layout="row" layout-align="center" style="position: relative;">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Điểm đến nổi bật</h2>
+            <p class="md-subhead">Etiam cursus ipsum quis enim faucibus</p>
+        </md-head>
+        <ul rn-carousel style="height: 400px; margin-top: 15px; margin-bottom: 15px" rn-carousel-controls rn-carousel-controls-allow-loop>
+            <li ng-repeat="item in home.locations | chunk:8">
+                <md-grid-list
+                md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+                md-row-height-gt-md="1:0.7" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+                md-gutter="8px" md-gutter-gt-sm="4px" >
+
+                <md-grid-tile ng-repeat="location in item"
+                md-rowspan="3.5"
+                md-colspan="3"
+                md-colspan-sm="1"
+                md-colspan-xs="1"
+                ng-class="emerald-green" >
+                <md-card class="card-location card-news" ng-mouseleave="cardActions=false">
+
+                    <div class="card-rating card-price badge" layout="row">
+                        <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                        <small> (360)</small>
+                    </div>
+
+                    <img 
+                    ng-mouseenter="cardActions=true"
+                    ng-src="{{location.imageThumb}}" class="md-card-image" alt="{{location.title}}">
+
+                    <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center" md-colors="{background: 'emerald-green--0.7'}">
+                        <md-button aria-label="{{location.title}}" class="card-showmore" ui-sref="locationView({employerSlug:location.slug})">
+                            <i class="fa fa-search fa-lg"></i> Show more
+                        </md-button>
+                        <div layout="row">
+                            <jk-rating-stars></jk-rating-stars>
+                            <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                        </div>
+                    </md-card-button>
+
+                    <md-card-title class="card-title" layout="column" layout-align="start">
+                        <a class="md-title" ui-sref="locationView({employerSlug:location.slug})">{{location.title}}</a>
+                        <span class="md-subhead" ng-show="cardActions">“{{location.description}}” ... <a href="#/" class="readmore">Readmore</a></span>
+                    </md-card-title>
+
+                </md-card>
+            </md-grid-tile>
+        </md-grid-list>
+    </li>
+</ul>
+
+<div class="break-line"></div>
+
+</div>
+</div>
+
+
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Tour nổi bật</h2>
+            <p class="md-subhead">Etiam cursus ipsum quis enim faucibus</p>
+        </md-head>
+        <md-grid-list
+        md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+        md-row-height-gt-md="1:1" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+        md-gutter="8px" md-gutter-gt-sm="4px" >
+
+        <md-grid-tile ng-repeat="tile in tour"
+        md-rowspan="{{tile.span.row}}"
+        md-colspan="{{tile.span.col}}"
+        md-colspan-sm="1"
+        md-colspan-xs="1"
+        ng-class="tile.background" >
+        <md-card class="card-location card-news card-tour" ng-mouseleave="cardActions=false">
+
+            <div class="card-rating card-price badge" layout="row"  md-colors="{background: tile.background}">
+                2 ngày 3 đêm
+            </div>
+
+            <img 
+            ng-mouseenter="cardActions=true"
+            ng-src="http://vivivu.vn/uploads/Blog/11/1457082301.png" class="md-card-image" alt="Washed Out">
+
+            <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center" md-colors="{background: tile.background + '--0.7'}">
+                <md-button aria-label="Favorite" class="card-showmore">
+                    <i class="fa fa-search fa-lg"></i> Show more
+                </md-button>
+                <div layout="row">
+                    <jk-rating-stars></jk-rating-stars>
+                    <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                </div>
+            </md-card-button>
+
+            <md-card-title class="card-title" layout="column" layout-align="start">
+                <a href="#"><span class="md-title">In-card mixed actions</span></a>
+                <span class="md-subhead" ng-show="cardActions">“Aliquam quis pulvinar purus. Etiam cursus ipsum quis enim faucibus.” ... <a href="#/" class="readmore">Readmore</a></span>
+            </md-card-title>
+
+            <md-card-title class="card-description">
+                <md-button class="md-fab card-avatar" aria-label="Favorite" md-colors="{background: tile.background}">
+                    <md-icon md-svg-icon="img/icons/house-outline.svg"></md-icon>
+                </md-button>
+                <md-card-title-text class="card-info" layout="column" layout-align="start start">
+                    <span class="md-title">Leader</span>
+                    <span class="md-title">Lucy-O</span>
+                </md-card-title-text>
+                <md-card-title-content layout="column" layout-align="start end">
+                    <span md-colors="{color: tile.background}">xxx đ</span>
+                    <div class="card-rating" layout="row" layout-align="center">
+                        <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                    </div>
+                </md-card-title-content>
+            </md-card-title>
+
+        </md-card>
+    </md-grid-tile>
+</md-grid-list>
+
+<md-input-container layout="row" layout-align="center center">
+    <md-button class="loadmore">Load more <i class="fa fa-chevron-down" aria-hidden="true"></i></md-button>
+</md-input-container>
+
+<div class="break-line"></div>
+
+</div>
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        <div ng-include="'/partials/tour/form.html'"></div>
+    </div>
+</div>
+
+<div flex layout="row" layout-align="center center" md-colors="{background: 'white'}" scrolly style="overflow: hidden; max-height: 300px">
+    <img ng-src="http://vivivu.vn/uploads/banner.jpg" alt="Description" />
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Địa điểm Vip</h2>
+            <p class="md-subhead">Etiam cursus ipsum quis enim faucibus</p>
+        </md-head>
+        <md-grid-list
+        md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+        md-row-height-gt-md="1:1.1" md-row-height="1:1.05" md-row-height-sm="3:1.15" md-row-height-xs="3:1.15"
+        md-gutter="8px" md-gutter-gt-sm="4px" >
+
+        <md-grid-tile ng-repeat="item in home.employer_vip"
+        md-rowspan="2"
+        md-colspan="2"
+        md-colspan-sm="1"
+        md-colspan-xs="1"
+        ng-class="tile.background" >
+        <md-card class="card-location card-news card-tour" ng-mouseleave="cardActions=false">
+
+            <img 
+            ng-mouseenter="cardActions=true"
+            ng-src="{{item.imageThumb}}" class="md-card-image" alt="{{item.title}}">
+
+            <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center" md-colors="{background: tile.color + '--0.7'}">
+                <md-button aria-label="{{item.title}}" class="card-showmore" ui-sref="employerView({employerSlug: item.slug})">
+                    <i class="fa fa-search fa-lg"></i> Show more
+                </md-button>
+                <div layout="row">
+                    <jk-rating-stars></jk-rating-stars>
+                    <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                </div>
+            </md-card-button>
+
+            <md-card-title class="card-title" layout="column" layout-align="start">
+                <div class="card-rating" layout="row" layout-align="center">
+                    <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                </div>
+            </md-card-title>
+
+            <md-card-title class="card-description">
+                <md-card-title-text class="card-info" layout="column" layout-align="start center">
+                    <span class="md-title">{{item.title}}</span>
+                    <span class="md-title">{{item.city}}</span>
+                </md-card-title-text>
+            </md-card-title>
+
+        </md-card>
+    </md-grid-tile>
+</md-grid-list>
+
+<md-input-container layout="row" layout-align="center center">
+    <md-button class="loadmore">Load more <i class="fa fa-chevron-down" aria-hidden="true"></i></md-button>
+</md-input-container>
+
+<div class="break-line"></div>
+
+</div>
+</div>
+
+<div flex layout="row" layout-align="center center" md-colors="{background: 'white'}" scrolly style="overflow: hidden; max-height: 300px">
+    <img ng-src="http://vivivu.vn/uploads/banner.jpg" alt="Description" />
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Blog</h2>
+            <p class="md-subhead">Etiam cursus ipsum quis enim faucibus</p>
+        </md-head>
+
+        <md-content>
+            <md-tabs class="tabs-blog" md-dynamic-height md-border-bottom md-center-tabs="true">
+              <md-tab ng-repeat="category in home.category_blog | toArray:true">
+              <md-tab-label>{{category.name}}
+              <md-tooltip md-direction="bottom">{{category.description}}</md-tooltip>
+              </md-tab-label>
+              <md-tab-body>
+                    <md-content layout-xs="column" layout="row">
+                        <div flex-xs flex-gt-xs="50" layout="column" ng-repeat="items in category.blogs | chunk:(category.blogs.length/2)">
+                            <md-list>
+                              <md-list-item class="md-3-line md-list-blog" ng-repeat="item in items" ui-sref="blogViews({blogSlug: item.slug})">
+                                <img width="180" ng-src="{{item.imageThumb}}" class="md-card-image" alt="{{item.title}}">
+                                <div class="md-list-item-text">
+                                  <h3>{{item.title}}</h3>
+                                  <p>{{item.description}}</p>
+                                  <p><span>{{item.updated_at}}</span> 
+                                  <span ng-show="item.view_count>0">- <i class="fa fa-eye"></i> {{item.view_count}}</span></p>
+                                </div>
+                                <md-divider md-inset ng-if="!$last"></md-divider>
+                              </md-list-item>
+                            </md-list>
+                        </div>
+                    </md-content>
+                    <md-input-container layout="row" layout-align="center center">
+                        <md-button class="loadmore">Load more <i class="fa fa-chevron-down" aria-hidden="true"></i></md-button>
+                    </md-input-container>
+                </md-tab-body>
+              </md-tab>
+            </md-tabs>
+        </md-content>
+        
+<div class="break-line"></div>
+</div>
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Top Member</h2>
+        </md-head>
+
+        <md-content class="md-top-member" layout="row" layout-align="center">
+            <md-list-item>
+                <img class="md-avatar" 
+                    ng-src="http://vivivu.vn/uploads/Blog/11/1457082301.png"
+                    ng-repeat="(key, item) in top_member" alt="{{item.title}}" 
+                    style="width: calc(100%/{{top_member.length}} - 16px);"
+                    ng-class="(key/3 === 1) && 'big'"
+                >
+            </md-list-item>
+        </md-content>
+
+
+</div>
+</div>
+
+</div>
+

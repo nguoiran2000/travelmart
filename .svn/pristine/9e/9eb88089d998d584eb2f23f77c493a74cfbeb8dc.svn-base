@@ -1,0 +1,152 @@
+﻿<style type="text/css">
+  .form-horizontal input.ng-invalid.ng-dirty {
+    border-color: #FA787E;
+}
+
+.form-horizontal input.ng-valid.ng-dirty {
+    border-color: #78FA89;
+}
+</style>
+
+
+
+<div class="view">
+    <div class="container">
+        <div class="row">
+        
+            <div class="slideshow">
+                <ul rn-carousel class="image" style="height: 250px" rn-carousel-index="slideshow">
+                    <li ng-repeat="image in blog.newsRelated">
+                        <div class="layer col-md-12 bgimage ng-binding" ng-style="{'background-image': 'url(' + image.imageThumb + ')'}">
+                            <caption><a href="/blog/{{image.slug}}"><h4>{{image.title}}</h4></a></caption>
+                        </div>
+                    </li>
+                </ul>
+                <div class="rn-carousel-indicator custom-indicator">
+                    <span ng-repeat="slide in blog.newsRelated" ng-class="{active: $index==$parent.slideshow}" ng-click="$parent.slideshow = $index" class="ng-scope">
+                        <h4>{{slide.title}}</h4>
+                    </span>
+                </div>
+            </div>
+
+            <a style="width:120px;text-align:center;margin:auto" class="more btn btn-success btn-block" href="/admin-blog/edit-blog/0"
+            ng-show="loggedIn()"> Create Blog </a>
+
+            <div class="row">
+
+                <div class="col-md-8">
+                    <h1 ng-bind-html="blog.title"></h1>
+                    <h5>
+                        {{blog.created_at}}, Posted By <a href="/user/{{blog.auth.user_id}}">{{blog.auth.full_name}}</a> - {{blog.view_count}} views
+                        <span class="pull-right">
+                        <button ng-click="likeBlog(blog.id)" 
+                class="text-danger"
+                ng-disabled="liketing">{{blog.likes.length}} {{checkLike(blog.likes)}}</button> - <a href="" ng-click="scrollTo('comment-area')">comment</a></span>
+                    </h5>
+                    <content ng-bind-html="blog.content"></content>
+                </div>
+
+                <div class="col-md-4">
+                    <header>Về tác giả</header>
+                    <img check-image src="{{blog.auth.avatar}}" alt="blog.auth.full_name">
+                    <h2 ng-bind-html="blog.auth.full_name"></h2>
+                    <p class="text-center"><a>Like</a> - <a>comment</a></p>
+                    <div ng-bind-html="blog.auth.full_name"></div>
+
+                    <header>Bài viết nhiều người xem</header>
+                    I have {{blog.topViews.length}} news. They are:
+                    <input type="search" ng-model="q" placeholder="filter news..." aria-label="filter news" />
+                    <ul class="example-animate-container">
+                        <li class="animate-repeat" ng-repeat="news in blog.topViews | filter:q as results">
+                          [{{$index + 1}}] {{news.title}}
+                        </li>
+                        <li class="animate-repeat" ng-if="results.length === 0">
+                          <strong>No results found...</strong>
+                        </li>
+                    </ul>
+
+                    <header>Tag</header>
+                    I have {{blog.tags.length}} tag. They are:
+                    <input type="search" ng-model="s_tag" placeholder="filter tag..." aria-label="filter tag" />
+                    <ul class="example-animate-container">
+                        <li class="animate-repeat" ng-repeat="tag in blog.tags | filter:s_tag as results_tag">
+                          [{{$index + 1}}] {{tag.title}}
+                        </li>
+                        <li class="animate-repeat" ng-if="results_tag.length === 0">
+                          <strong>No results found...</strong>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+            
+            <div class="col-md-12">
+                <header>Bài viết liên quan</header>
+                <ul rn-carousel class="image" style="height: 200px">
+                    <li ng-repeat="images in imageCollection">
+                        <div ng-repeat="image in images" class="layer col-md-{{imageCol}} bgimage ng-binding" ng-style="{'background-image': 'url(' + image.imageThumb + ')'}">
+                            <caption><a href="/blog/{{image.slug}}"><h4>{{image.title}}</h4></a></caption>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div id="comment-area" class="col-md-12">
+                <header>Bình luận</header>
+                
+                <!-- NEW COMMENT FORM -->
+    <form ng-submit="submitComment(0)"> <!-- ng-submit will disable the default form action and use our function -->
+        <input type="hidden" ng-model="commentData[0].blog_id" ng-value="{{commentData[0].blog_id = blog.id}}" name="blog_id">
+
+        <!-- AUTHOR -->
+        <div class="form-group">
+            <input type="text" class="form-control input-sm" name="author" ng-model="commentData[0].author" placeholder="Name">
+        </div>
+
+        <!-- COMMENT TEXT -->
+        <div class="form-group">
+            <input type="text" class="form-control input-lg" name="comment" ng-model="commentData[0].text" placeholder="Comment">
+        </div>
+        
+        <!-- SUBMIT BUTTON -->
+        <div class="form-group text-right"> 
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+        </div>
+    </form>
+
+    <!-- LOADING ICON -->
+    <!-- show loading icon if the loading variable is set to true -->
+    <p class="text-center" ng-show="loading"><span class="fa fa-meh-o fa-5x fa-spin"></span></p>
+
+    <!-- THE COMMENTS -->
+    <!-- hide these comments if the loading variable is true -->
+    <div class="comment" ng-class="(comment.parent_id > 0) ? 'bg-info' : ''" ng-hide="loading" 
+        ng-repeat="comment in comments | orderBy:['-parent_id || id', 'id'] | limitTo:limit">
+        <h3>Comment #{{ comment.id }} <small>{{ comment.created_at }}, by {{ comment.title }}</small></h3>
+        <p>{{ comment.content }}</p>
+        <p>
+            <button ng-click="like(comment.id)" 
+                class="text-danger"
+                ng-disabled="liketing">{{comment.likes.length}} {{checkLike(comment.likes)}}</button>
+            <a href="#" ng-click="inputReply[comment.parent_id] = inputReply[comment.id] = !inputReply[comment.id]" class="text-success">Reply</a>
+            <a href="#" ng-click="shareComment(comment.id)" class="text-info">Share</a>
+            <a href="#" ng-click="deleteComment(comment.id)" class="text-muted" ng-show="loggedIn() && isRole(comment.user_id)">Delete</a>
+        </p>
+
+        <form ng-show="inputReply[comment.id]" ng-if="!comment.parent_id > 0" ng-submit="submitComment(comment.id)">
+            <input type="hidden" ng-model="commentData[comment.id].blog_id" ng-value="{{commentData[comment.id].blog_id = blog.id}}" name="blog_id">
+            <input type="hidden" ng-value="{{commentData[comment.id].comment_id = comment.id}}" name="comment_id">
+            <input type="text" class="form-control input-lg" name="comment" ng-model="commentData[comment.id].text" placeholder="Reply">
+        </form>
+    </div>
+
+    <button style="width:120px;text-align:center;margin:auto" class="more btn btn-primary btn-block" 
+        ng-click="loadMore()"
+        ng-hide="limit >= comments.length">Load More!</button>
+
+            </div>
+
+        </div>
+    </div>
+</div>

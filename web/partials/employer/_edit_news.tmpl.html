@@ -1,0 +1,52 @@
+<md-dialog aria-label="{{ news.id ? 'Update ' + news.title : 'Create news' }}">
+	<form ng-cloak name="newsForm" role="form">
+
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ news.id ? 'Update ' + news.title : 'Create news' }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					X
+				</md-button>
+			</div>
+		</md-toolbar>
+
+		<md-dialog-content>
+			<div class="md-dialog-content">
+
+				<md-input-container class="md-block">
+					<input name="title" ng-model="news.title" placeholder="Title" required>
+					<div ng-messages="newsForm.title.$error">
+		            	<div ng-message="required">This is required.</div>
+		          	</div>
+				</md-input-container>
+
+				<lf-ng-md-file-input lf-files='news.image'> </lf-ng-md-file-input>
+
+				<md-input-container class="md-block">
+					<label>Description</label>
+					<textarea name="description" ng-model="news.description" md-maxlength="150" rows="5" md-select-on-focus md-minlength="50" required></textarea>
+					<div ng-messages="newsForm.description.$error" role="alert">
+						<div ng-message-exp="['required', 'minlength']">
+			            	Your description must be up 50 characters long.
+			          	</div>
+			        </div>
+				</md-input-container>
+
+				<text-angular ng-model="news.content"></text-angular>
+
+                <img ng-show="news.imageThumb" class="img-responsive" ng-src="{{news.imageThumb}}" alt="{{news.title}}" />
+
+			</div>
+		</md-dialog-content>
+
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<div confirm-delete on-confirm="delete(news.id)" ng-show="news.id"></div>
+			<md-button ng-click="newsForm.$valid && edit(news)">
+				Save
+			</md-button>
+		</md-dialog-actions>
+
+	</form>
+</md-dialog>

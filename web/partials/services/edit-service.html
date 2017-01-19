@@ -1,0 +1,92 @@
+﻿
+<form name="serviceForm">
+    <md-content layout-padding>
+        <div layout-gt-sm="row">
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Name</label>
+                <input name="name" ng-model="service.name" required>
+                <div ng-messages="serviceForm.name.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+
+            <md-input-container class="md-block" flex-gt-sm>
+                <label>Title</label>
+                <input name="title" ng-model="service.title" required>
+                <div ng-messages="serviceForm.title.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+        </div>
+
+        <lf-ng-md-file-input name="file" lf-files='service.image' lf-api="api"> </lf-ng-md-file-input>
+
+        <img style="max-width: 200px" ng-show="service.imageThumb" class="img-responsive" ng-src="{{service.imageThumb}}" alt="{{service.title}}" />
+
+        <md-input-container class="md-block">
+            <label>Description</label>
+            <textarea ng-model="service.description" md-maxlength="255" rows="5" md-select-on-focus></textarea>
+        </md-input-container>
+
+        <div layout-gt-sm="row">
+
+            <div md-color-picker ng-model="service.color" class="md-block" flex-gt-sm></div>
+
+            <md-switch ng-model="service.status" ng-true-value="1" ng-false-value="0" aria-label="Status" class="md-block" flex-gt-sm>Status</md-switch>
+        </div>
+        
+    </md-content>
+
+    <md-subheader class="md-no-sticky">
+        Service meta
+        <md-button class="md-fab md-mini md-primary" ng-click="addNewMeta()" aria-label="false">
+            <i class="fa fa-plus fa-lg" aria-hidden="true"></i>
+        </md-button>
+        <md-button class="md-fab md-mini md-warn" ng-click="removeAllMeta()" aria-label="false">
+            <i class="fa fa-minus fa-lg" aria-hidden="true"></i>
+        </md-button>
+    </md-subheader>
+
+    <md-divider></md-divider>
+
+    <md-list-item data-ng-repeat="item in service.metas">
+        <input type="hidden" name="meta_id" ng-model="item.id" />
+        <md-checkbox ng-model="item.selected" aria-label="false"></md-checkbox>
+        <md-input-container>
+            <label>Type</label>
+            <md-select name="type" ng-model="item.meta_key" required>
+                <md-option value="text">Text</md-option>
+                <md-option value="number">Number</md-option>
+                <md-option value="textarea">Textarea</md-option>
+                <md-option value="select">Dropdown list</md-option>
+            </md-select>
+        </md-input-container>
+
+        <md-input-container>
+            <input required name="meta_value" ng-model="item.meta_value" placeholder="Title">
+        </md-input-container>
+
+        <md-input-container flex ng-show="item.meta_key != 'select'">
+            <input name="meta_description" ng-model="item.description" placeholder="Description">
+        </md-input-container>
+
+        <md-input-container flex ng-show="item.meta_key == 'select'">
+            <md-chips name="meta_list" ng-model="item.meta_list" md-removable="true" placeholder="Enter a Option"></md-chips>
+        </md-input-container>
+
+        <md-icon class="md-secondary" ng-click="remove(service.metas, $index)" aria-label="false" ng-show="!item.id">
+            <i class="fa fa-minus fa-lg" aria-hidden="true"></i>
+        </md-icon>
+        <md-icon confirm-delete on-confirm="deleteMeta(item.id)" ng-show="item.id"></md-icon>
+    </md-list-item>
+
+    <md-divider></md-divider>
+
+    <md-toolbar layout="row"  md-colors="{background: 'emerald-green'}">
+        <div confirm-delete on-confirm="deleteService(service.id)" ng-show="service._id"></div>
+        <md-button ng-click="saveService(service, 1)" ng-disabled="isClean() || serviceForm.$invalid">
+            Save
+        </md-button>
+    </md-toolbar>
+
+</form>

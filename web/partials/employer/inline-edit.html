@@ -1,0 +1,20 @@
+﻿<div>
+	<div data-ng-switch on="type" ng-show="editMode">
+		<div data-ng-switch-when="textarea">
+			<textarea type="text" on-enter="save()" on-esc="cancel()" ng-model="$parent.model"></textarea>
+		</div>
+		<div data-ng-switch-when="html">
+			<summernote ng-model="$parent.model" config="$parent.options" on-enter="save()" on-esc="cancel()"></summernote>
+		</div>
+		<div data-ng-switch-default>
+			<input type="text" on-enter="save()" on-esc="cancel()" ng-model="$parent.model">
+		</div>
+	</div>
+
+	<md-button class="md-mini" ng-click="cancel()" ng-show="editMode">cancel</md-button>
+	<md-button class="md-mini" ng-click="save()" ng-show="editMode">save</md-button>
+	<span ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+		<span ng-hide="editMode" ng-click="edit()" style="white-space: pre-wrap;" ng-bind-html="model || '.....'"></span>
+		<a class="md-warn" aria-label="false" ng-show="showEdit" ng-click="edit()"><i class="fa fa-cog" aria-hidden="true"></i></a>
+	</span>
+</div>

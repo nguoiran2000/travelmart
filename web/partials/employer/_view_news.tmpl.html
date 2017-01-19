@@ -1,0 +1,27 @@
+<md-toolbar style="background-color: #50C878">
+    <div class="md-toolbar-tools">
+        <md-button ng-click="goBack()" aria-label="false"><i class="fa fa-chevron-circle-left fa-lg" aria-hidden="true"></i> Back</md-button>
+        <h2>
+            <span>{{news.title}}</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="editNewsDialog($event, news.id)" aria-label="false">
+            <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+        </md-button>
+    </div>
+</md-toolbar>
+<div flex>
+    <img style="max-width: 100%" ng-src="{{news.imageThumb}}" alt="{{news.title}}">
+</div>
+<div flex layout-padding>
+    <div layout="row" layout-align="center center">
+        <h2>{{news.title}}</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="Author">
+            <i class="fa fa-user" aria-hidden="true"></i>
+        </md-button>
+        {{news.auth.full_name}}
+
+    </div>
+    <content ng-bind-html="news.content | to_trusted"></content>
+</div>

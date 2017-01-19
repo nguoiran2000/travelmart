@@ -1,0 +1,225 @@
+﻿<div class="slideshow">
+    <ul rn-carousel class="image" style="height: 300px" rn-carousel-index="slideshow">
+        <li ng-repeat="image in blog.newsRelated">
+            <div class="layer bgimage ng-binding" ng-style="{'background-image': 'url(' + image.imageThumb + ')'}" style="height: 300px;"></div>
+        </li>
+    </ul>
+    <div style="position: absolute;top: 0;width: 100%">
+        <md-list-item ng-repeat="slide in blog.newsRelated" ng-class="{active: $index==$parent.slideshow}" ng-click="$parent.slideshow = $index">
+            <div layout="row" layout-align="center" style="width: 100%">
+                <p class="layout-max-width"> {{ slide.title }} </p>
+            </div>
+        </md-list-item>
+    </div>
+</div>
+
+
+<div layout="row" layout-align="center">
+    <div class="layout-max-width" flex layout="column">
+
+        <md-button ui-sref="adminBlog.edit({blogID:0})" ng-show="loggedIn()"> Create Blog </md-button>
+
+        <div layout="row">
+            <md-card flex="70" layout="column" layout-padding>
+                <md-card-header>
+                  <md-card-avatar>
+                    <img class="md-user-avatar" ng-src="{{blog.auth.avatar}}"/>
+                  </md-card-avatar>
+                  <md-card-header-text>
+                    <span class="md-title">{{blog.auth.full_name}}</span>
+                    <span class="md-subhead">{{blog.created_at}}, Posted By <a ui-sref="adminBlog.edit({blogID:blog.auth.user_id})">{{blog.auth.full_name}}</a> - {{blog.view_count}} views </span>
+                  </md-card-header-text>
+                </md-card-header>
+                <img ng-src="{{blog.imageThumb}}" class="md-card-image" alt="blog.title">
+                <md-card-title>
+                  <md-card-title-text>
+                    <span class="md-headline">{{blog.title}}</span>
+                    <span class="md-subhead" layout="row" layout-padding>
+                        <span>{{blog.created_at}}, Posted By</span> <a ui-sref="adminBlog.edit({blogID:blog.auth.user_id})">{{blog.auth.full_name}}</a> <span> - {{blog.view_count}} views</span>
+                        <span flex></span>
+                        <a href ng-click="likeBlog(blog.id)" ng-disabled="liketing">{{checkLike(blog.likes)}}</a>
+                        <a href ng-click="scrollTo('comment-area')">Comment</a> 
+                        <i class="fa fa-heart md-warm" ng-show="blog.likes.length > 0"> {{blog.likes.length}}</i>
+                        <i class="fa fa-comments md-warm" ng-show="comments.length > 0"> {{comments.length}}</i>
+                    </span>
+                    
+                  </md-card-title-text>
+                </md-card-title>
+                
+                <md-card-content ng-bind-html="blog.content"></md-card-content>
+
+                <md-divider ></md-divider>
+
+                <div id="comment-area" class="col-md-12">
+                    <header>Bình luận</header>
+
+                    <!-- NEW COMMENT FORM -->
+                    <form ng-submit="submitComment(0)">
+                        <input type="hidden" ng-model="commentData[0].blog_id" ng-value="{{commentData[0].blog_id = blog.id}}" name="blog_id">
+
+                        <md-input-container class="md-block">
+                            <label>Name</label>
+                            <input type="text" name="author" ng-model="commentData[0].author" required>
+                        </md-input-container>
+
+                        <md-input-container class="md-block">
+                            <label>Comment</label>
+                            <input type="text" name="comment" ng-model="commentData[0].text" required>
+                        </md-input-container>
+                        
+                        <md-button type="submit" class="md-primary">Submit</md-button>
+                    </form>
+
+                    <p ng-show="loading"><i class="fa fa-meh-o fa-5x fa-spin"></i></p>
+
+                    <md-list flex>
+                        <md-list-item class="md-3-line" ng-repeat="comment in comments | orderBy:['-parent_id || id', 'id'] | limitTo:limit" ng-hide="loading" ng-style="(comment.parent_id > 0) && {'margin-left':'30px'} || ''">
+                          <div class="md-list-item-text" layout="column">
+                            <h3>{{ comment.content }}</h3>
+                            <p>Comment #{{ comment.id }} <small>{{ comment.created_at }}, by </small>{{ comment.title }}</p>
+                        
+                        <p class="md-subhead">
+                            <a href ng-click="like(comment.id)" ng-disabled="liketing">{{checkLike(comment.likes)}}</a>
+                            <a href ng-click="inputReply[comment.parent_id] = inputReply[comment.id] = !inputReply[comment.id]">Reply</a>
+                            <span flex></span>
+                            <a href ng-click="deleteComment(comment.id)" ng-show="loggedIn() && isRole(comment.user_id)">Delete</a>
+
+                            <i class="fa fa-heart md-warm" ng-show="comment.likes.length > 0"> {{comment.likes.length}}</i>
+                            <i class="fa fa-comments md-warm" ng-show="comment.length > 0"> {{comment.length}}</i>
+                        </p>
+
+                        <form ng-show="inputReply[comment.id]" ng-if="!comment.parent_id > 0" ng-submit="submitComment(comment.id)">
+                            <input type="hidden" ng-model="commentData[comment.id].blog_id" ng-value="{{commentData[comment.id].blog_id = blog.id}}" name="blog_id">
+                            <input type="hidden" ng-value="{{commentData[comment.id].comment_id = comment.id}}" name="comment_id">
+                            <md-input-container class="md-block">
+                            <input type="text" name="comment" ng-model="commentData[comment.id].text" placeholder="Reply" sync-focus-with="inputReply[comment.id]">
+                            </md-input-container>
+                        </form>
+                          </div>
+                        </md-list-item>
+                    </md-list>
+                    
+
+                    <md-button style="width:120px;text-align:center;margin:auto" class="more btn btn-primary btn-block" 
+                    ng-click="loadMore()"
+                    ng-hide="limit >= comments.length">Load More!</md-button>
+
+                </div>
+
+            </md-card>
+            <div flex="30" layout="column" layout-align="start center">
+                <h3>Về tác giả</h3>
+                <img check-image src="{{blog.auth.avatar}}" alt="blog.auth.full_name">
+                <h2 ng-bind-html="blog.auth.full_name"></h2>
+                <p><a href>Like</a> - <a href>comment</a></p>
+                <div ng-bind-html="blog.auth.full_name"></div>
+
+                <md-card md-theme="light-white" md-theme-watch>
+                    <md-head layout="column" layout-align="center center">
+                        <h3 class="md-head">Bài viết nhiều người xem</h3>
+                    </md-head>
+                    <md-input-container class="md-block">
+                        <label>I have {{blog.topViews.length}} news. They are:</label>
+                        <input ng-model="q">
+                    </md-input-container>
+                    <md-list>
+                    <md-list-item class="md-2-line" ng-repeat="item in blog.topViews | filter:q as results" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false"
+                    ui-sref=".viewNews({newsID: item.id, newsSlug: (item.title | slugify)})">
+                        <img width="80" ng-src="{{item.imageThumb}}" class="md-card-image" alt="{{item.title}}" layout-padding />
+                        <div class="md-list-item-text" layout="column">
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.description }}</p>
+                        </div>
+                        <section layout="row" layout-sm="column" layout-align="center center" layout-wrap style="position: absolute;right: 0;top: 0" ng-show="showEdit">
+                            <div confirm-delete on-confirm="deleteNews(item.id)"></div>
+                            <md-button class="md-icon-button" aria-label="Edit" ng-click="editNewsDialog($event, item.id)">
+                                <md-icon md-svg-icon="/img/icons/edit.svg"></md-icon>
+                            </md-button>
+                        </section>
+                    </md-list-item>
+                    <md-list-item ng-if="results.length === 0">
+                        <p>No results found...</p>
+                    </md-list-item>
+                    </md-list>
+                </md-card>
+
+                <md-card style="width: 100%">
+                    <md-head layout="column" layout-align="center center">
+                        <h3 class="md-head">Tag</h3>
+                    </md-head>
+                    <md-input-container class="md-block">
+                        <label>{{blog.tags.length}} Tags</label>
+                        <input ng-model="s_tag">
+                    </md-input-container>
+                    <md-list>
+                    <md-list-item ng-repeat="item in blog.tags | filter:s_tag as results_tag">
+                        <p>[{{$index + 1}}] {{item.title}}</p>
+                    </md-list-item>
+                    <md-list-item ng-if="results_tag.length === 0">
+                        <p>No results found...</p>
+                    </md-list-item>
+                    </md-list>
+                </md-card>
+
+            </div>
+        </div>
+
+
+<div flex layout="row" layout-align="center" style="position: relative;">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Bài viết liên quan</h2>
+        </md-head>
+        <ul rn-carousel style="height: 200px; margin-top: 15px; margin-bottom: 15px" rn-carousel-controls rn-carousel-controls-allow-loop>
+            <li ng-repeat="images in imageCollection">
+                <md-grid-list
+                md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+                md-row-height-gt-md="1:0.63" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+                md-gutter="8px" md-gutter-gt-sm="4px" >
+
+                <md-grid-tile ng-repeat="image in images"
+                md-rowspan="4"
+                md-colspan="3"
+                md-colspan-sm="1"
+                md-colspan-xs="1">
+                <md-card class="card-location card-news" ng-mouseleave="cardActions=false">
+
+                    <div class="card-rating card-price badge" layout="row">
+                        <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                        <small> (360)</small>
+                    </div>
+
+                    <img 
+                    ng-mouseenter="cardActions=true"
+                    ng-src="{{image.imageThumb}}" class="md-card-image" alt="{{image.title}}">
+
+                    <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center">
+                        <md-button aria-label="Favorite" class="card-showmore">
+                            <i class="fa fa-search fa-lg"></i> Show more
+                        </md-button>
+                        <div layout="row">
+                            <jk-rating-stars></jk-rating-stars>
+                            <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                        </div>
+                    </md-card-button>
+
+                    <md-card-title class="card-title" layout="column" layout-align="start">
+                        <a href="#"><span class="md-title">{{image.title}}</span></a>
+                        <span class="md-subhead" ng-show="cardActions">“{{image.description}}” ... <a href="#/" class="readmore">Readmore</a></span>
+                    </md-card-title>
+
+                </md-card>
+            </md-grid-tile>
+        </md-grid-list>
+    </li>
+</ul>
+
+<div class="break-line"></div>
+
+</div>
+</div>
+
+
+
+    </div>
+</div>

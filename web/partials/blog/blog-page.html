@@ -1,0 +1,178 @@
+﻿<div class="slideshow">
+    <ul rn-carousel class="image" style="height: 300px" rn-carousel-index="slideshow">
+        <li ng-repeat="image in hot_blog">
+            <div class="layer bgimage ng-binding" ng-style="{'background-image': 'url(' + image.imageThumb + ')'}" style="height: 300px;"></div>
+        </li>
+    </ul>
+    <div style="position: absolute;top: 0;width: 100%">
+        <md-list-item ng-repeat="slide in hot_blog" ng-class="{active: $index==$parent.slideshow}" ng-click="$parent.slideshow = $index">
+            <div layout="row" layout-align="center" style="width: 100%">
+                <p class="layout-max-width"> {{ slide.title }} </p>
+            </div>
+        </md-list-item>
+    </div>
+</div>
+<md-toolbar layout="row" layout-align="center start" md-colors="{background: 'white'}">
+    <div flex class="layout-max-width" layout="row">
+        <div class="md-toolbar-tools">
+            <md-button aria-label="Recommended">
+                Recommended
+            </md-button>
+            <md-button aria-label="Latest">
+                Latest
+            </md-button>
+            <md-button aria-label="Hightlights">
+                Hightlights
+            </md-button>
+
+            <md-input-container flex="15">
+                <label>Category</label>
+                <md-select name="favoriteColor" ng-model="favoriteColor">
+                    <md-option ng-repeat="item in categories" value="{{item.id}}">{{item.name}}</md-option>
+                </md-select>
+            </md-input-container>
+
+            <span flex></span>
+            <md-button class="md-raised md-primary" ui-sref="adminBlog.edit({blogID:0})" ng-show="loggedIn()"> Create Blog </md-button>
+            <md-button class="md-fab md-mini" aria-label="Favorite">
+                <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+            </md-button>
+            <md-button class="md-fab md-mini" md-colors="{background: 'orange'}" aria-label="Favorite">
+                <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+            </md-button>
+        </div>
+    </div>
+</md-toolbar>
+
+<div layout="row" layout-align="center">
+    <div class="layout-max-width" flex layout="column">
+
+        <div layout="row">
+            <md-card flex="70" layout="column" layout-padding>
+                
+                <md-head layout="column" layout-align="center center">
+                    <h3 class="md-head">Bài viết mới nhất</h3>
+                </md-head>
+                
+                <md-list-item class="md-3-line" ng-repeat="item in blogs | orderBy:['-category_id || id', 'id'] | limitTo:limitItem" ui-sref="blogViews({blogSlug: item.slug})">
+                    <img width="180" ng-src="{{item.imageThumb}}" class="md-card-image" alt="{{item.title}}" layout-padding />
+                    <div class="md-list-item-text" layout="column">
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.description }}</p>
+                    </div>
+                </md-list-item>
+                <md-input-container layout="row" layout-align="center center" ng-show="limitItem < blogsLength">
+                    <md-button class="loadmore" ng-click="limitItem = limitItem + 5">Load more <i class="fa fa-chevron-down" aria-hidden="true"></i></md-button>
+                </md-input-container>
+
+            </md-card>
+            <div flex="30" layout="column" layout-align="start center">
+                <h3>Về tác giả</h3>
+                <img check-image src="{{blog.auth.avatar}}" alt="blog.auth.full_name">
+                <h2 ng-bind-html="blog.auth.full_name"></h2>
+                <p><a href>Like</a> - <a href>comment</a></p>
+                <div ng-bind-html="blog.auth.full_name"></div>
+
+                <md-card md-theme="light-white" md-theme-watch>
+                    <md-head layout="column" layout-align="center center">
+                        <h3 class="md-head">Bài viết nhiều người xem</h3>
+                    </md-head>
+                    <md-input-container class="md-block">
+                        <label>I have {{top_blog.length}} news. They are:</label>
+                        <input ng-model="q">
+                    </md-input-container>
+                    <md-list>
+                    <md-list-item class="md-2-line" ng-repeat="item in top_blog | filter:q as results" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false"
+                    ui-sref="blogViews({blogSlug: item.slug})">
+                        <img width="80" ng-src="{{item.imageThumb}}" class="md-card-image" alt="{{item.title}}" layout-padding />
+                        <div class="md-list-item-text" layout="column">
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.description }}</p>
+                        </div>
+                    </md-list-item>
+                    <md-list-item ng-if="results.length === 0">
+                        <p>No results found...</p>
+                    </md-list-item>
+                    </md-list>
+                </md-card>
+
+                <md-card style="width: 100%">
+                    <md-head layout="column" layout-align="center center">
+                        <h3 class="md-head">Tag</h3>
+                    </md-head>
+                    <md-input-container class="md-block">
+                        <label>{{tags.length}} Tags</label>
+                        <input ng-model="s_tag">
+                    </md-input-container>
+                    <md-list>
+                    <md-list-item ng-repeat="item in tags | filter:s_tag as results_tag">
+                        <p>[{{$index + 1}}] {{item.title}}</p>
+                    </md-list-item>
+                    <md-list-item ng-if="results_tag.length === 0">
+                        <p>No results found...</p>
+                    </md-list-item>
+                    </md-list>
+                </md-card>
+
+            </div>
+        </div>
+
+
+<div flex layout="row" layout-align="center" style="position: relative;">
+    <div class="layout-max-width">
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Bài viết khuyến mãi</h2>
+        </md-head>
+        <ul rn-carousel style="height: 200px; margin-top: 15px; margin-bottom: 15px" rn-carousel-controls rn-carousel-controls-allow-loop>
+            <li ng-repeat="images in blogs | chunk:4">
+                <md-grid-list
+                md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+                md-row-height-gt-md="1:0.63" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+                md-gutter="8px" md-gutter-gt-sm="4px" >
+
+                <md-grid-tile ng-repeat="image in images"
+                md-rowspan="4"
+                md-colspan="3"
+                md-colspan-sm="1"
+                md-colspan-xs="1">
+                <md-card class="card-location card-news" ng-mouseleave="cardActions=false">
+
+                    <div class="card-rating card-price badge" layout="row">
+                        <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                        <small> (360)</small>
+                    </div>
+
+                    <img 
+                    ng-mouseenter="cardActions=true"
+                    ng-src="{{image.imageThumb}}" class="md-card-image" alt="{{image.title}}">
+
+                    <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center">
+                        <md-button aria-label="Favorite" class="card-showmore">
+                            <i class="fa fa-search fa-lg"></i> Show more
+                        </md-button>
+                        <div layout="row">
+                            <jk-rating-stars></jk-rating-stars>
+                            <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                        </div>
+                    </md-card-button>
+
+                    <md-card-title class="card-title" layout="column" layout-align="start">
+                        <a href="#"><span class="md-title">{{image.title}}</span></a>
+                        <span class="md-subhead" ng-show="cardActions">“{{image.description}}” ... <a href="#/" class="readmore">Readmore</a></span>
+                    </md-card-title>
+
+                </md-card>
+            </md-grid-tile>
+        </md-grid-list>
+    </li>
+</ul>
+
+<div class="break-line"></div>
+
+</div>
+</div>
+
+
+
+    </div>
+</div>

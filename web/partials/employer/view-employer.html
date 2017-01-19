@@ -1,0 +1,460 @@
+﻿<div class="slideshow" style="overflow: hidden;">
+    <ul rn-carousel class="image layout-max-width" style="height: 300px;margin: 0 auto;perspective: 2000px;" rn-carousel-index="slideshow" rn-carousel-transition="hexagon" rn-carousel-controls rn-carousel-controls-allow-loop>
+        <li ng-repeat="item in employer.introduction" active="item.active">
+            <div class="layer bgimage ng-binding" ng-style="{'background-image': 'url(' + item.imageThumb + ')'}" style="height: 300px;background-size: cover;"></div>
+            <md-card class="caption" layout-padding layout="column" layout-align="center center" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+                <h2 class="md-head">{{item.title}}</h2>
+                <p class="md-subhead">{{item.description}}</p>
+                <section layout="row" layout-sm="column" layout-align="center center" layout-wrap style="position: absolute;right: 0;top: 0" ng-show="showEdit">
+                    <div confirm-delete on-confirm="deleteIntroduction(item.id)"></div>
+                    <md-button class="md-raised" aria-label="Edit" ng-click="showAdvanced($event, item.id)">
+                        <md-icon md-svg-icon="/img/icons/edit.svg"></md-icon> Edit
+                    </md-button>
+                </section>
+            </md-card>
+        </li>
+    </ul>
+    <md-button class="md-raised btn-newslide" ng-click="showAdvanced($event)"  >
+        Create Introduction
+    </md-button>
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width custom-indicator">
+
+        <md-grid-list
+        md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+        md-row-height-gt-md="1:2" md-row-height="1:1" md-row-height-sm="3:1" md-row-height-xs="3:1"
+        md-gutter="8px" md-gutter-gt-sm="4px">
+            <md-grid-tile ng-repeat="image in employer.introduction"
+            md-rowspan="1"
+            md-colspan="4"
+            md-colspan-sm="1"
+            md-colspan-xs="1" ng-class="{active: $index==$parent.slideshow}" ng-click="$parent.slideshow = $index"
+            ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+                <div layout="column">
+                    <h2 class="md-head">{{image.title}}</h2>
+                    <p class="md-subhead">{{image.description}}</p>
+                    
+                </div>
+                <section layout="row" layout-sm="column" layout-align="center center" layout-wrap style="position: absolute;right: 0;top: 0" ng-show="showEdit">
+                        <div confirm-delete on-confirm="deleteIntroduction(image.id)"></div>
+                        <md-button class="md-raised" aria-label="Edit" ng-click="showAdvanced($event, image.id)">
+                            <md-icon md-svg-icon="/img/icons/edit.svg"></md-icon> Edit
+                        </md-button>
+                    </section>
+            </md-grid-tile>
+        </md-grid-list>
+    </div>
+</div>
+
+<md-toolbar layout="row" layout-align="center center" md-colors="{background: 'white'}">
+    <h1 inline-edit="employer.title" inline-type="input" on-save="updateInline(employer.title, 'title')" on-cancel="cancelEdit(employer.title)" style="margin: 0"></h1>
+</md-toolbar>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+        
+        <div layout="row">
+            <div flex="70">
+                <md-card>
+                    <ui-view>
+                        <md-toolbar layout="row" layout-align="center start" md-colors="{background: 'white'}">
+                            <div flex class="layout-max-width" layout="row">
+                                <div class="md-toolbar-tools">
+
+                                    <div layout="row">
+                                        <md-input-container style="margin-right: 10px;">
+                                            <label>Sorting</label>
+                                            <md-select ng-model="searchData.sort" ng-change="searchEmployer()" arial-label="false">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option value="price_asc">Giá: từ thấp đến cao</md-option>
+                                                <md-option value="price_desc">Giá: từ cao đến thấp</md-option>
+                                                <md-option value="view_count">Lượt xem</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+
+                                    <md-autocomplete
+                                    md-selected-item="ctrl.selectedItem"
+                                    md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
+                                    md-search-text="ctrl.searchText"
+                                    md-selected-item-change="ctrl.selectedItemChange(item)"
+                                    md-items="item in ctrl.querySearch(ctrl.searchText)"
+                                    md-item-text="item.display"
+                                    md-min-length="0"
+                                    placeholder="What is your favorite US state?">
+                                    <md-item-template>
+                                        <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                        No states matching "{{ctrl.searchText}}" were found.
+                                        <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                    </md-not-found>
+                                </md-autocomplete>
+
+                                <span flex></span>
+
+                                <md-button class="md-fab md-mini" aria-label="Favorite">
+                                    <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+                                </md-button>
+                                <md-button class="md-icon-button" aria-label="Show Map" ng-click="searhLocation = !searhLocation">
+                                    <i class="fa fa-map-marker"></i>
+                                </md-button>
+                                <md-button class="md-fab md-mini" md-colors="{background: 'orange'}" aria-label="Favorite">
+                                    <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+                                </md-button>
+                            </div>
+                        </div>
+                    </md-toolbar>
+                    <md-head layout="column" layout-align="center center">
+                        <h2 class="md-head">Địa điểm quanh đây</h2>
+                    </md-head>
+
+                    <md-grid-list
+                    md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+                    md-row-height-gt-md="1:1.2" md-row-height="1:1.05" md-row-height-sm="3:1" md-row-height-xs="3.2:1"
+                    md-gutter="8px" md-gutter-gt-sm="4px" >
+
+                    <md-grid-tile ng-repeat="item in employer.employers"
+                    md-rowspan="6"
+                    md-colspan="4"
+                    md-colspan-sm="1"
+                    md-colspan-xs="1">
+                    <md-grid-tile-header style="height: auto;background: none;">
+                        <md-card class="card-location" layout-align="center">
+                            <div class="card-rating badge" layout="row" layout-align="center" style="position: absolute;left: 5px;top: 5px;color: #fff;">
+                                <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                                <small> ({{item.view_count}})</small>
+                            </div>
+                            <span ng-show="item.price != 0" class="badge card-price" ng-style="{'background-color': item.color}" style="color:#fff">
+                                {{item.price}}
+                            </span>
+                            <img 
+                            ng-mouseenter="cardActions=true"
+                            ng-src="{{item.imageThumb}}" class="md-card-image {{item.limitHeight}}" alt="Washed Out">
+
+                            <md-card-button ng-mouseleave="cardActions=false" ng-show="cardActions" layout="column" class="card-actions" layout-align="start center">
+                                <md-button aria-label="{{item.title}}" class="card-showmore md-raised" ui-sref="employerView({employerSlug: item.slug})" style="margin-top: 15%;">
+                                    <i class="fa fa-search fa-lg"></i> Show more
+                                </md-button>
+                                <div layout="row">
+                                    <jk-rating-stars></jk-rating-stars>
+                                    <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                                </div>
+                            </md-card-button>
+
+                            <md-card-title class="card-content" layout-align="center" ng-style="{'background-color': item.color}">
+                                <md-button class="md-fab card-type" aria-label="{{item.title}}" ng-style="{'background-color': item.color}">
+                                    <md-icon md-svg-icon="/img/icons/house-outline.svg"></md-icon>
+                                </md-button>
+
+                            </md-card-title>
+
+                            <md-card-title class="card-title" style="padding-bottom: 0;">
+                                <md-card-title-text>
+                                    <span class="md-headline">{{item.title}}</span>
+                                </md-card-title-text>
+                            </md-card-title>
+                            <ul style="padding-left: 25px;">
+                                <li ng-repeat="service in item.services" style="margin-bottom: 4px;">
+                                    <a ui-sref="employerView.viewService({employerSlug: item.slug, serviceID:service.id, serviceSlug: (service.title | slugify)})" ng-style="{'color': service.base_service.color}">{{service.title}}</a>
+                                </li>
+                            </ul>
+                        </md-card>
+                    </md-grid-tile-header>
+                </md-grid-tile>
+            </md-grid-list>
+
+        </ui-view>
+    </md-card>
+
+    <md-card class="card-location" md-theme="light-white" md-theme-watch layout-padding>
+                <md-head layout="column" layout-align="start">
+                    <h2 class="md-head" style="margin: 0;">Rate and write a review</h2>
+                </md-head>
+                
+                <form name="reviewForm">
+                    <div layout="row" layout-align="start center">
+                        <span>Your rating: </span>
+                        <jk-rating-stars rating="review.rating"></jk-rating-stars>
+                        <span flex></span>
+                        <md-input-container class="md-icon-float md-block" ng-show="!loggedIn()">
+                            <label>Review by Name</label>
+                            <input type="text" ng-model="review.author">
+                        </md-input-container>
+                        <md-button class="md-icon-button" aria-label="false" ng-show="loggedIn()">
+                            <img src="/images/profile_placeholder.png" alt="User" style="width: 100%;" />
+                        </md-button>
+                        <md-button class="md-icon-button" ng-click="review_gallery = !review_gallery" aria-label="false">
+                            <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
+                        </md-button>
+                    </div>
+                    <md-content md-theme="docs-dark" layout-gt-sm="column" layout-padding ng-show="review_gallery">
+                        <label>Gallery:</label>
+                        <lf-ng-md-file-input name="gallery" lf-files='review.gallery' lf-drag-and-drop-label="Drag and Drop here!" drag preview multiple></lf-ng-md-file-input>
+                    </md-content>
+                    <div layout="row" layout-align="space-between center">
+                        <md-input-container class="md-block" flex="70">
+                            <label>Content</label>
+                            <textarea ng-model="review.content" rows="5" md-select-on-focus></textarea>
+                        </md-input-container>
+                        <md-button ng-click="sendReview(review)">Send <i class="fa fa-paper-plane" aria-hidden="true"></i></md-button>
+                    </div>
+                </form>
+
+                <md-list flex>
+                    <md-subheader class="md-no-sticky">Comments</md-subheader>
+                    <md-divider></md-divider>
+                    <md-list-item class="md-3-line md-long-text" ng-repeat="item in employer.comments | orderBy:['-parent_id || id', 'id'] | limitTo:limitItem" ng-style="(item.parent_id > 0) && {'margin-left' : '50px'}">
+                      <img ng-src="/images/profile_placeholder.png" class="md-avatar" alt="{{item.who}}" />
+                      <div class="md-list-item-text" layout="column">
+                        <h3 layout="row">
+                            {{ item.title }} 
+                            <span flex></span>
+
+                            <md-button class="md-icon-button" ng-click="like(item.id)" ng-disabled="liketing" aria-label="Like">{{item.likes.length}} {{checkLike(item.likes)}}</md-button>
+                            <md-button class="md-icon-button" ng-click="inputReply[item.parent_id] = inputReply[item.id] = !inputReply[item.id]" aria-label="Reply">Reply</md-button>
+                            <md-button class="md-icon-button" ng-click="shareComment(item.id)" aria-label="Share">Share</md-button>
+                            <div confirm-delete on-confirm="deleteComment(item.id)" ng-show="loggedIn() && isRole(item.user_id)"></div>
+
+                            <div class="card-rating" ng-if="!item.parent_id > 0">
+                                <jk-rating-stars rating="item.description" read-only="true" ></jk-rating-stars>
+                            </div>
+                        </h3>
+                        <h4>
+                            {{ item.content }}
+                        </h4>
+                        <p>
+                            <img width="80" ng-repeat="image in item.gallery" ng-src="{{image.url}}" alt="{{image.name}}" />
+            
+                        </p>
+                        <form ng-show="inputReply[item.id]" ng-if="!item.parent_id > 0" ng-submit="sendReview(comment, item.id)">
+                            <md-input-container class="md-block">
+                                <input type="text" name="inputComment" ng-model="comment.content" placeholder="Reply">
+                            </md-input-container>
+                        </form>
+                      </div>
+                    </md-list-item>
+                </md-list>
+
+                <md-button ng-click="loadMore()" ng-hide="limitItem >= employer.comments.length">Load More!</md-button>
+
+            </md-card>
+</div>
+            <div flex="30">
+
+                <md-card layout="column" layout-align="center center" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+                    <div ng-show="showEdit || imageSrc">
+                        <md-button class="md-icon-button" uploadfile aria-label="false">
+                            <i class="fa fa-picture-o fa-lg" aria-hidden="true"></i>
+                        </md-button>
+                        <input class="ng-hide" id="upload" type="file" name="logo" ng-file-select="onFileSelect($files)" aria-label="false" />
+                        <md-button class="md-icon-button" ng-click="addLogo()" type="submit" aria-label="false">
+                        <i class="fa fa-upload fa-lg" aria-hidden="true"></i></md-button>
+                    </div>
+                    <img ng-src="{{imageSrc || employer.imageThumb}}" ng-show="employer.imageThumb || imageSrc" alt="{{employer.title}}" class="md-card-image" alt="Washed Out">
+
+                    <md-card-actions layout="row">
+                      <md-button>Tour Guild</md-button>
+                      <md-button>Tour Guild</md-button>
+                    </md-card-actions>
+
+                    <md-card-content>
+                        <p inline-edit="employer.address" inline-type="input" on-save="updateInline(employer.address, 'address')" on-cancel="cancelEdit(employer.address)"></p>
+                    </md-card-content>
+                </md-card>
+
+                <md-toolbar md-scroll-shrink md-colors="{background: 'emerald-green'}" style="margin: 25px 8px 10px;width: auto;">
+                    <div class="md-toolbar-tools">
+                        <h3>
+                            <span>Gợi ý Tour</span>
+                        </h3>
+                    </div>
+                </md-toolbar>
+
+                <md-card class="card-location card-news card-tour" ng-mouseleave="cardActions=false" ng-repeat="tile in tour">
+
+            <div class="card-rating card-price badge" layout="row" md-colors="{background: tile.background}">
+                2 ngày 3 đêm
+            </div>
+
+            <img 
+            ng-mouseenter="cardActions=true"
+            ng-src="http://vivivu.vn/uploads/Blog/11/1457082301.png" class="md-card-image" alt="Washed Out">
+
+            <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center" md-colors="{background: tile.background + '--0.7'}">
+                <md-button aria-label="Favorite" class="card-showmore">
+                    <i class="fa fa-search fa-lg"></i> Show more
+                </md-button>
+                <div layout="row">
+                    <jk-rating-stars></jk-rating-stars>
+                    <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                </div>
+            </md-card-button>
+
+            <md-card-title class="card-title" layout="column" layout-align="start">
+                <a href="#"><span class="md-title">In-card mixed actions</span></a>
+                <span class="md-subhead" ng-show="cardActions">“Aliquam quis pulvinar purus. Etiam cursus ipsum quis enim faucibus.” ... <a href="#/" class="readmore">Readmore</a></span>
+            </md-card-title>
+
+            <md-card-title class="card-description">
+                <md-button class="md-fab card-avatar" aria-label="Favorite" md-colors="{background: tile.background}">
+                    <md-icon md-svg-icon="/img/icons/house-outline.svg"></md-icon>
+                </md-button>
+                <md-card-title-text class="card-info" layout="column" layout-align="start start">
+                    <span class="md-title">Leader</span>
+                    <span class="md-title">Lucy-O</span>
+                </md-card-title-text>
+                <md-card-title-content layout="column" layout-align="start end">
+                    <span md-colors="{color: tile.background}">xxx đ</span>
+                    <div class="card-rating" layout="row" layout-align="center">
+                        <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                    </div>
+                </md-card-title-content>
+            </md-card-title>
+
+        </md-card>
+
+        <div layout="row" layout-align="center">
+            <md-button class="md-raised md-warn">Xem thêm</md-button>
+        </div>
+
+        <md-toolbar md-scroll-shrink md-colors="{background: 'emerald-green'}" style="margin: 25px 8px 10px;width: auto;">
+            <div class="md-toolbar-tools">
+                <h3>
+                    <span>Bài viết về địa điểm</span>
+                </h3>
+            </div>
+        </md-toolbar>
+
+        <md-card class="card-news-right" md-theme-watch ng-repeat="item in employer.news" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false" ui-sref=".viewNews({newsID: item.id, newsSlug: (item.title | slugify)})" style="position: relative;">
+            <md-card-title>
+                
+              <md-card-title-text>
+                <span class="md-headline">{{item.title}}</span>
+                <span class="md-subhead">{{item.description}}</span>
+              </md-card-title-text>
+              <md-card-title-media>
+                    <div class="md-media-sm card-media"><img ng-src="{{item.imageThumb}}" class="md-card-image" alt="Washed Out"></div>
+                </md-card-title-media>
+
+            </md-card-title>
+            <md-card-actions layout="row" layout-align="end center">
+              <md-button class="md-mini">Xem thêm</md-button>
+            </md-card-actions>
+            <section layout="row" layout-sm="column" layout-align="center center" layout-wrap style="position: absolute;right: 0;top: 0" ng-show="showEdit">
+                    <div confirm-delete on-confirm="deleteNews(item.id)"></div>
+                    <md-button class="md-icon-button" aria-label="Edit" ng-click="editNewsDialog($event, item.id)">
+                        <md-icon md-svg-icon="/img/icons/edit.svg"></md-icon>
+                    </md-button>
+                </section>
+        </md-card>
+
+        <div layout="row" layout-align="center">
+            <md-button class="md-raised md-warn">Xem thêm</md-button>
+            <md-button ng-click="editNewsDialog($event)" ng-show="loggedIn()">Add News</md-button>
+        </div>
+
+        <md-card>
+        <div layout="row">
+                    <md-button>
+                        Photo gallery
+                    </md-button>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="showAddImage($event)" aria-label="false">
+                        <i class="fa fa-cog fa-lg" aria-hidden="true"></i>
+                    </md-button>
+                </div>
+
+                <md-grid-list
+                    md-cols="1" md-cols-sm="2" md-cols-md="3" md-cols-gt-md="6"
+                    md-row-height-gt-md="1:1" md-row-height="4:3"
+                    md-gutter="4px" md-gutter-gt-sm="4px" >
+
+                    <md-grid-tile ng-repeat="item in employer.gallery"
+                        md-rowspan="2"
+                        md-colspan="2"
+                        md-colspan-sm="1"
+                        md-colspan-xs="1" ng-mouseenter="showEdit = true" ng-mouseleave="showEdit = false">
+                        <img width="100%" ng-src="{{item.url}}" alt="{{item.name}}" />
+                        <md-button class="md-icon-button md-image-delete" ng-click="deleteImage(item.url, employer.gallery, key)" aria-label="false" ng-show="showEdit">
+                            <i class="fa fa-times" aria-hidden="true"></i>
+                        </md-button>
+                    </md-grid-tile>
+                </md-grid-list>
+        </md-card>
+            
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div flex layout="row" layout-align="center center" md-colors="{background: 'white'}" scrolly style="overflow: hidden; max-height: 300px">
+    <img ng-src="http://vivivu.vn/uploads/banner.jpg" alt="Description" />
+</div>
+
+<div flex layout="row" layout-align="center">
+    <div class="layout-max-width">
+
+        <md-head layout="column" layout-align="center center">
+            <h2 class="md-head">Địa điểm uy tín</h2>
+        </md-head>
+
+        <md-grid-list
+        md-cols="1" md-cols-sm="2" md-cols-md="9" md-cols-gt-md="12"
+        md-row-height-gt-md="1:1.1" md-row-height="1:1.05" md-row-height-sm="3:1.15" md-row-height-xs="3:1.15"
+        md-gutter="8px" md-gutter-gt-sm="4px" >
+
+        <md-grid-tile ng-repeat="tile in location_vip"
+        md-rowspan="{{tile.span.row}}"
+        md-colspan="{{tile.span.col}}"
+        md-colspan-sm="1"
+        md-colspan-xs="1"
+        ng-class="tile.background" >
+        <md-card class="card-location card-news card-tour" ng-mouseleave="cardActions=false">
+
+            <img 
+            ng-mouseenter="cardActions=true"
+            ng-src="http://vivivu.vn/uploads/Blog/11/1457082301.png" class="md-card-image" alt="Washed Out">
+
+            <md-card-button ng-show="cardActions" layout="column" class="card-actions" layout-align="start center" md-colors="{background: tile.background + '--0.7'}">
+                <md-button aria-label="Favorite" class="card-showmore">
+                    <i class="fa fa-search fa-lg"></i> Show more
+                </md-button>
+                <div layout="row">
+                    <jk-rating-stars></jk-rating-stars>
+                    <i class="fa fa-comments-o fa-lg card-icon-comment"></i>
+                </div>
+            </md-card-button>
+
+            <md-card-title class="card-title" layout="column" layout-align="start">
+                <div class="card-rating" layout="row" layout-align="center">
+                    <jk-rating-stars rating="3" read-only="true" ></jk-rating-stars>
+                </div>
+            </md-card-title>
+
+            <md-card-title class="card-description">
+                <md-card-title-text class="card-info" layout="column" layout-align="start center">
+                    <span class="md-title">n-card mixed actions</span>
+                    <span class="md-title">Hà nội</span>
+                </md-card-title-text>
+            </md-card-title>
+
+        </md-card>
+    </md-grid-tile>
+</md-grid-list>
+
+    </div>
+</div>
+
+
+<div>
+    <ul>
+        <li ng-repeat="todo in todos" inline-edit="todo.title" inline-type="textarea" on-save="updateTodo(todo.title)" on-cancel="cancelEdit(todo.title)"></li>
+    </ul>
+
+    <div>{{todos}}</div>
+</div>

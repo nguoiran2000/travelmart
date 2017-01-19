@@ -1,0 +1,43 @@
+﻿<div class="view">
+    <div class="container">
+        <div class="row">
+
+            <div class="slideshow">
+                <ul rn-carousel class="image" style="height: 250px" rn-carousel-index="slideshow">
+                    <li ng-repeat="image in employer.slideshow">
+                        <div class="layer col-md-12 bgimage ng-binding" ng-style="{'background-image': 'url(' + image.imageThumb + ')'}">
+                            <caption><a href="/blog/{{image.slug}}"><h4>{{image.title}}</h4></a></caption>
+                        </div>
+                    </li>
+                </ul>
+                <div class="rn-carousel-indicator custom-indicator">
+                    <span ng-repeat="slide in employer.slideshow" ng-class="{active: $index==$parent.slideshow}" ng-click="$parent.slideshow = $index" class="ng-scope">
+                        <h4>{{slide.title}}</h4>
+                    </span>
+                </div>
+                <div>
+                    <a href="#" ng-click="openUpdateSlideshow()" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false" ng-class="{'bg-success': hovering}"
+                        style="font-size: 25px;padding: 5px">
+                        <i class="glyphicon glyphicon-camera"></i>
+                        <small ng-show="hovering">Update slideshow</small>
+                    </a>
+
+                    
+                </div>
+            </div>
+            <div class="dialog-demo-content" layout="row" layout-wrap layout-margin layout-align="center">
+                <md-button class="md-primary md-raised" ng-click="showPrompt($event)"  >
+                    Prompt Dialog
+                </md-button>
+            </div>
+            <div>
+                <ul>
+                    <li ng-repeat="todo in todos" inline-edit="todo.title" inline-type="textarea" on-save="updateTodo(todo.title)" on-cancel="cancelEdit(todo.title)"></li>
+                </ul>
+
+                <div>{{todos}}</div>
+            </div>
+
+        </div>
+    </div>
+</div>

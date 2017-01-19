@@ -1,0 +1,115 @@
+ <div class="row">
+    <div class="col-md-12">
+
+
+        <a class="btn btn-success" ui-sref=".edit({blogID:0})"><i class="glyphicon glyphicon-plus"></i>&nbsp;Add new Blog</a>
+        <a ng-click="statusChanges(true)"
+        ng-disabled="countCheck === 0" class="btn btn-info">&nbsp;<i class="glyphicon glyphicon-ok"></i>&nbsp; Active</a>
+        <a ng-click="statusChanges(false)"
+        ng-disabled="countCheck === 0" class="btn btn-warning">&nbsp;<i class="glyphicon glyphicon-ok"></i>&nbsp; UnActive</a>
+        <a ng-click="deleteBlogs()"
+        ng-disabled="countCheck === 0" class="btn btn-danger">&nbsp;<i class="glyphicon glyphicon-trash"></i>&nbsp; Delete</a>
+
+        <ui-view></ui-view>
+
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="dataTables_length" id="example_length">
+                    <label>
+                        <select 
+                            class="form-control input-sm"
+                            ng-options="option.value as option.name for option in options" 
+                            ng-model="pageSize" 
+                            ng-change="pageSizeChanged()" 
+                            ng-init="pageSize = pageSize">
+                        </select> records per page</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="example_filter" class="dataTables_filter">
+                        <label>Search:<input type="search" class="form-control input-sm" aria-controls="example" ng-model="searchText.name" ng-change="searchTextChanged()"></label>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered">
+                 <thead>
+                    <tr>
+                        <th><input type="checkbox" ng-click="allNeedsClicked()" ng-checked="allNeedsMet()" /></th>
+                        <th>
+                            <label ng-click="sort('title')">Blog Name&nbsp;
+                                <span class="glyphicon sort-icon" ng-show="sortKey=='title'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                            </label>
+                            <input type="search" class="form-control input-sm" aria-controls="example" ng-model="searchText.title" ng-change="searchTextChanged()" ng-model-options="{ debounce: 1000 }">
+                        </th>
+                        <th>
+                            <label ng-click="sort('user_id')">User&nbsp;
+                                <span class="glyphicon sort-icon" ng-show="sortKey=='user_id'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                            </label>
+                            <input type="search" class="form-control input-sm" aria-controls="example" ng-model="searchText.user_id" ng-change="searchTextChanged()" ng-model-options="{ debounce: 1000 }">
+                        </th>
+                        <th>
+                            <label ng-click="sort('category_id')">Category&nbsp;
+                                <span class="glyphicon sort-icon" ng-show="sortKey=='category_id'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                            </label>
+                            <select class="form-control"
+                                    name="category_id" id="category_id"
+                                    ng-options="option.id as option.name group by option.parent_name for option in categories"
+                                    ng-model="searchText.category_id"
+                                    ng-change="searchTextChanged()">
+                                <option value="">- Please Choose -</option>
+                            </select>
+                        </th>
+                        <th>
+                            <label ng-click="sort('status')">Status&nbsp;
+                                <span class="glyphicon sort-icon" ng-show="sortKey=='status'" ng-class="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+                            </label>
+                            <input type="checkbox" class="form-control input-sm" aria-controls="example" ng-model="searchText.status" ng-change="searchTextChanged()" ng-model-options="{ debounce: 1000 }">
+                        </th>
+                        <th>Action&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody ng-show="blogs.length > 0">
+                    <tr ng-repeat="data in blogs" ng-class="{'info':data.selected}" ng-click="selectRow(data)">
+                        <td><input type="checkbox" ng-model="data.selected"></td>
+                        <td>
+                            <a ui-sref="blogViews({ blogSlug: data.slug })">
+                                <img class="img-responsive pull-left" width="80" ng-src="{{data.imageThumb}}" alt="{{data.title}}" />
+                                {{data.title}}
+                            </a>
+                        </td>
+                        <td>{{data.auth}}</td>
+                        <td>{{data.category.name}}</td>
+                        <td>
+                            <label ng-click="statusChange(data.id, data.status);data.status=!data.status">
+                                <span class="glyphicon status-icon" 
+                                    ng-mouseenter="data.status = !data.status"
+                                    ng-mouseleave="data.status = !data.status"
+                                    ng-class="{'glyphicon-ok':data.status,'glyphicon-remove':!data.status}"></span>
+                            </label>
+                        </td>
+                        <td>
+                            <a ui-sref=".edit({blogID: data.id})" class="btn">&nbsp;<i class="glyphicon glyphicon-edit"></i>&nbsp; Edit</a>
+                            <a ng-click="deleteBlog(data.id)"
+                ng-show="data.id" class="btn">&nbsp;<i class="glyphicon glyphicon-trash"></i>&nbsp; Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- BOTTOM OF TABLE: shows record number and pagination control -->
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="dataTables_info" ole="alert" aria-live="polite" aria-relevant="all">Showing {{startItem}} to {{endItem}} of {{totalItems}} entries</div>
+                </div>
+                <div class="col-sm-6">
+                    <ul uib-pagination total-items="totalItems" ng-model="currentPage" max-size="pageSize" class="pagination-sm" boundary-links="true" rotate="false" ng-change="pageChanged()" items-per-page="pageSize"></ul>
+                </div>
+            </div>
+            
+        </div>
+        <div class="col-md-12" ng-show="blogs.length == 0">
+            <div class="col-md-12">
+                <h4>No blogs found</h4>
+            </div>
+        </div>
+    </div>

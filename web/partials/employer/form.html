@@ -1,0 +1,114 @@
+<div ng-cloak>
+    <div flex layout="row" layout-align="center" layout-padding>
+        <div class="layout-max-width" layout="column" layout-align="center center">
+            <form name="formData">
+            
+            <md-tabs md-dynamic-height="" md-border-bottom="" md-selected="selectedIndex" style="min-width: 500px;">
+                <md-tab label="Employer Name" ng-disabled="true">
+                    <md-card class="md-padding" layout="column" layout-align="center center">
+                        <h2 style="margin: 0;">Employer info</h2>
+                        <p>Infomation for Company</p>
+                        <div>
+                            <md-input-container>
+                                <label>Title</label>
+                                <input ng-model="employer.title" required>
+                                <div ng-messages="formData.title.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container>
+                                <label>Name</label>
+                                <input ng-model="employer.name" required>
+                                <div ng-messages="formData.name.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+                        <div>
+                            <md-button type="submit" class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="formData.$valid && nextTab()">Next <i class="fa fa-chevron-right" aria-hidden="true"></i></md-button>
+                        </div>
+                    </md-card>
+                </md-tab>
+
+                <md-tab label="Employer Type" ng-disabled="true">
+                    <md-card class="md-padding" layout="column" layout-align="center center">
+                        <md-radio-group ng-model="employer.employer_type" required>
+                            <div flex layout='row' layout-padding layout-align="start center">
+                                <div style="width: 150px">
+                                    Location
+                                </div>
+                                <md-radio-button value="location" class="md-primary" style="margin-bottom: 0;">Giao diện dành cho Điểm đến du lịch</md-radio-button>
+                            </div>
+                            <div flex layout='row' ng-if="employer.employer_type == 'location'">
+                                <md-autocomplete flex
+            md-input-name="city"
+            md-input-minlength="2"
+            md-input-maxlength="18"
+            md-no-cache="ctrl.noCache"
+            md-selected-item="ctrl.selectedItem_city"
+            md-search-text="ctrl.searchText_city"
+            md-selected-item-change="ctrl.selectedItemChange_city(item)"
+            md-items="item in ctrl.querySearch_city(ctrl.searchText_city)"
+            md-item-text="item.type + ' ' + item.name"
+            md-min-length="0"
+            md-floating-label="City">
+          <md-item-template>
+            <span md-highlight-text="ctrl.searchText_city">{{item.type + ' ' + item.name}}</span>
+          </md-item-template>
+        </md-autocomplete>
+        <md-autocomplete flex
+            md-input-name="district"
+            md-input-minlength="2"
+            md-input-maxlength="18"
+            md-no-cache="ctrl.noCache"
+            md-selected-item="ctrl.selectedItem_district"
+            md-search-text="ctrl.searchText_district"
+            md-selected-item-change="ctrl.selectedItemChange_district(item)"
+            md-items="item in ctrl.querySearch_district(ctrl.searchText_district)"
+            md-item-text="item.name"
+            md-min-length="0"
+            md-floating-label="District"
+            ng-disabled="!ctrl.district">
+          <md-item-template>
+            <span md-highlight-text="ctrl.searchText_district">{{item.name}}</span>
+          </md-item-template>
+        </md-autocomplete>
+                            </div>
+                            <div flex layout='row' layout-padding layout-align="start center" >
+                                <div style="width: 150px">
+                                    Employer
+                                </div>
+                                <md-radio-button value="employer" style="margin-bottom: 0;">Giao diện dành cho Công ty dịch vụ</md-radio-button>
+                                
+                            </div>
+                            <div flex layout='row' ng-if="employer.employer_type == 'employer'">
+                                <md-autocomplete flex
+            md-input-name="location"
+            md-input-minlength="2"
+            md-input-maxlength="18"
+            md-no-cache="true"
+            md-selected-item="ctrl.selectedItem_location"
+            md-search-text="ctrl.searchText_location"
+            md-selected-item-change="ctrl.selectedItemChange_location(item)"
+            md-items="item in ctrl.querySearch_location(ctrl.searchText_location)"
+            md-item-text="item.title"
+            md-floating-label="Location">
+          <md-item-template>
+            <span md-highlight-text="ctrl.searchText_location">{{item.title}}</span>
+          </md-item-template>
+        </md-autocomplete>
+                            </div>
+                        </md-radio-group>
+                        <div>
+                            <md-button class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="previousTab()"><i class="fa fa-chevron-left" aria-hidden="true"></i> Previous</md-button>
+                            <md-button type="submit" class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="formData.$valid && processForm()" ng-disabled="loading">Submit</md-button>
+                        </div>
+                        <md-progress-circular ng-show="loading" md-diameter="96" style="position: absolute;"></md-progress-circular>
+                    </md-card>
+                </md-tab>
+            </md-tabs>
+            </form>
+        </div>
+    </div>
+</div>

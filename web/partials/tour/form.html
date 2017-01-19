@@ -1,0 +1,179 @@
+<div ng-controller="EditTourController" ng-cloak>
+    <md-head layout="column" layout-align="center center">
+        <h2 class="md-head">Lên kế hoạch cho chuyến đi của bạn</h2>
+        <p class="md-subhead">Bắt đầu lên kế hoạch chi tiết cho chuyến đi của bạn!</p>
+    </md-head>
+    <form name="formData" laypout="row" layout-padding="center center">
+        <md-tabs md-dynamic-height md-border-bottom class="tabs-tour" md-center-tabs="true" md-selected="selectedIndex">
+            <md-tab label="one">
+                <md-tab-label>
+                    <md-button class="md-fab md-pagination-button md-lg" aria-label="Favorite">
+                        <md-icon md-svg-src="/img/icons/house-outline.svg"></md-icon>
+                    </md-button>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-content class="md-padding">
+                        <h2>Thông tin về chuyến đi</h2>
+
+                        <p>
+                            Nên nhớ rằng bạn có thể thay đổi <em>bất cứ lúc</em> nào mình muốn.
+                        </p>
+
+                        <div layout="row" layout-align="start" flex>
+                            <md-input-container flex="50">
+                                <label>Tên gọi cho chuyến đi</label>
+                                <input ng-model="tour.title" required>
+                                <div ng-messages="formData.title.$error">
+                                    <div ng-message="required">Trường này là bắt buộc.</div>
+                                </div>
+                            </md-input-container>
+
+                            <md-input-container flex="50">
+                                <label>Số người dự tính</label>
+                                <input type="number" ng-model="tour.max_member" required>
+                                <div ng-messages="formData.max_member.$error">
+                                    <div ng-message="required">Trường này là bắt buộc.</div>
+                                </div>
+                            </md-input-container>
+                        </div>
+
+                        <div layout="row" flex>
+                            <md-input-container flex="50">
+                                <label>Ngày khởi hành</label>
+                                <md-datepicker ng-model="tour.start_date" md-placeholder="Ngày khởi hành"
+                                md-open-on-focus md-min-date="minDate"></md-datepicker>
+                            </md-input-container>
+
+                            <md-input-container flex="50">
+                                <label>Ngày kết thúc</label>
+                                <md-datepicker ng-model="tour.end_date" md-placeholder="Ngày kết thúc"
+                                md-open-on-focus md-min-date="tour.start_date"></md-datepicker>
+                            </md-input-container>
+                        </div>
+
+                        <div layout="row" layout-align="end" flex>
+                            <md-button ng-click="clearValue()" ng-disabled="!(tour.title || tour.max_member)">Làm mới</md-button>
+                            <md-button type="submit" class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="formData.$valid && nextTab()">Đi tiếp <i class="fa fa-chevron-right" aria-hidden="true"></i></md-button>
+                        </div>
+
+                    </md-content>
+                </md-tab-body>
+            </md-tab>
+            <md-tab label="two">
+                <md-tab-label>
+                    <md-button class="md-fab md-pagination-button md-lg" aria-label="Favorite">
+                        <md-icon md-svg-src="/img/icons/house-outline.svg" class="ng-scope ng-isolate-scope md-default-them"></md-icon>
+                    </md-button>
+                </md-tab-label>
+                <md-tab-body>
+                    <md-content class="md-padding">
+                        <h2>Điểm khởi hành và nơi đến chuyến hành trình</h2>
+
+                        <p>
+                            Bạn có thể thêm những điểm đến trong chuyến đi bằng nút cộng <em>và</em> bớt đi bằng nút trừ.
+                        </p>
+
+                        <div layout="row" layout-align="start" flex>
+                            <md-autocomplete flex
+                            md-input-name="city"
+                            md-input-minlength="2"
+                            md-input-maxlength="18"
+                            md-no-cache="ctrl.noCache"
+                            md-selected-item="selectedItem_city"
+                            md-search-text="searchText_city"
+                            md-selected-item-change="ctrl.selectedItemChange_city(item)"
+                            md-items="item in ctrl.querySearch_city(searchText_city)"
+                            md-item-text="item.type + ' ' + item.name"
+                            md-min-length="0"
+                            md-floating-label="City">
+                            <md-item-template>
+                                <span md-highlight-text="searchText_city">{{item.type + ' ' + item.name}}</span>
+                            </md-item-template>
+                        </md-autocomplete>
+                        <md-autocomplete flex
+                        md-input-name="district"
+                        md-input-minlength="2"
+                        md-input-maxlength="18"
+                        md-no-cache="ctrl.noCache"
+                        md-selected-item="selectedItem_district"
+                        md-search-text="searchText_district"
+                        md-selected-item-change="ctrl.selectedItemChange_district(item)"
+                        md-items="item in ctrl.querySearch_district(searchText_district)"
+                        md-item-text="item.name"
+                        md-min-length="0"
+                        md-floating-label="District"
+                        ng-disabled="!ctrl.district">
+                        <md-item-template>
+                            <span md-highlight-text="searchText_district">{{item.name}}</span>
+                        </md-item-template>
+                    </md-autocomplete>
+                </div>
+
+                <div>
+                    <md-button class="md-fab md-mini md-primary" ng-click="addMaker()" aria-label="false">
+                        <i class="fa fa-plus fa-lg" aria-hidden="true"></i>
+                    </md-button>
+                    <md-button class="md-fab md-mini md-warn" ng-click="removeAllMaker()" aria-label="false">
+                        <i class="fa fa-minus fa-lg" aria-hidden="true"></i>
+                    </md-button>
+                </div>
+
+                <md-list dnd-list="tour.makers">
+                    <md-list-item ng-repeat="item in tour.makers" class="noright">
+
+                        <md-checkbox ng-model="item.selected"></md-checkbox>
+                        <p  
+                        dnd-draggable="item"
+                        dnd-moved="tour.makers.splice($index, 1)"
+                        dnd-effect-allowed="move"
+                        dnd-selected="models.selected = item">{{item.district.type + ' ' + item.district.name}} - {{item.city.type + ' ' + item.city.name}}</p>
+                        <md-button class="md-icon-button" aria-label="false">
+                            <i class="fa fa-chevron-up"></i>
+                        </md-button>
+                        <md-button class="md-icon-button" aria-label="false">
+                            <i class="fa fa-chevron-down"></i>
+                        </md-button>
+                        <md-button class="md-icon-button" ng-click="removeMaker(item)" aria-label="false">
+                            <i class="fa fa-minus fa-lg" aria-hidden="true"></i>
+                        </md-button>
+
+                    </md-list-item>
+                </md-list>
+
+
+                <div layout="row" layout-align="end" flex>
+                    <md-button class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="previousTab()"><i class="fa fa-chevron-left" aria-hidden="true"></i> Quay lại</md-button>
+                    <md-button type="submit" class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="formData.$valid && nextTab()">Đi tiếp <i class="fa fa-chevron-right" aria-hidden="true"></i></md-button>
+                </div>
+
+            </md-content>
+        </md-tab-body>
+    </md-tab>
+    <md-tab label="three">
+        <md-tab-label>
+            <md-button class="md-fab md-pagination-button md-lg" aria-label="Favorite">
+                <md-icon md-svg-src="/img/icons/house-outline.svg" class="ng-scope ng-isolate-scope md-default-them"></md-icon>
+            </md-button>
+        </md-tab-label>
+        <md-tab-body>
+            <md-content class="md-padding">
+                <h2>Tour gợi ý cho bạn</h2>
+
+                <p>
+                    Nên nhớ rằng bạn có thể thay đổi <em>bất cứ lúc</em> nào mình muốn.
+                </p>
+
+
+
+                <div layout="row" layout-align="end" flex>
+                    <md-button class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="previousTab()"><i class="fa fa-chevron-left" aria-hidden="true"></i> Quay lại</md-button>
+                    <md-button type="submit" class="md-raised" md-colors="{background: 'emerald-green'}" ng-click="saveTour()">Tạo Tour <i class="fa fa-chevron-right" aria-hidden="true"></i></md-button>
+                </div>
+
+            </md-content>
+        </md-tab-body>
+    </md-tab>
+</md-tabs>
+<md-progress-circular ng-show="loading" md-diameter="96" style="position: absolute;"></md-progress-circular>
+</form>
+</div>

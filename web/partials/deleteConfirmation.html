@@ -1,0 +1,5 @@
+<section layout="row" layout-sm="column" layout-align="center center" layout-wrap>
+    <md-button class="md-raised md-warn" ng-click="startDelete()" ng-hide="isDeleting"><i class="fa fa-trash-o"></i> Delete</md-button>
+    <md-button class="md-raised" ng-click="cancel()" ng-show="isDeleting">Cancel</md-button>
+    <md-button class="md-raised md-warn" ng-click="confirm()" ng-show="isDeleting"><i class="fa fa-trash-o"></i> Confirm</md-button>
+</section>

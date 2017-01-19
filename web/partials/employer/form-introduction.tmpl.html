@@ -1,0 +1,50 @@
+<md-dialog aria-label="{{ introduction.id ? 'Update ' + introduction.title : 'Create Introduction' }}">
+	<form ng-cloak name="introductionForm" role="form">
+
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ introduction.id ? 'Update ' + introduction.title : 'Create Introduction' }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					X
+				</md-button>
+			</div>
+		</md-toolbar>
+
+		<md-dialog-content>
+			<div class="md-dialog-content">
+
+				<md-input-container class="md-block">
+					<input name="title" ng-model="introduction.title" placeholder="Title" required>
+					<div ng-messages="introductionForm.title.$error">
+		            	<div ng-message="required">This is required.</div>
+		          	</div>
+				</md-input-container>
+
+				<md-input-container class="md-block">
+					<label>Description</label>
+					<textarea name="description" ng-model="introduction.description" md-maxlength="150" rows="5" md-select-on-focus md-minlength="50" required></textarea>
+					<div ng-messages="introductionForm.description.$error" role="alert">
+						<div ng-message-exp="['required', 'minlength']">
+			            	Your description must be up 50 characters long.
+			          	</div>
+			        </div>
+				</md-input-container>
+
+				<lf-ng-md-file-input lf-files='introduction.image'> </lf-ng-md-file-input>
+
+                <img ng-show="introduction.imageThumb" class="img-responsive" ng-src="{{introduction.imageThumb}}" alt="{{introduction.title}}" />
+
+			</div>
+		</md-dialog-content>
+
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<div confirm-delete on-confirm="delete(introduction.id)" ng-show="introduction.id"></div>
+			<md-button ng-click="introductionForm.$valid && edit(introduction)">
+				Save
+			</md-button>
+		</md-dialog-actions>
+
+	</form>
+</md-dialog>

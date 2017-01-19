@@ -1,0 +1,21 @@
+<md-content md-theme="docs-dark" layout-gt-sm="column" layout-padding>
+	<label>Attributes:</label>
+	<div ng-repeat="(key, item) in service.base_service.metas">
+		<input type="hidden" name="meta_key" ng-model="service.metas[item.id].meta_key" ng-init="service.metas[item.id].meta_key = item.id" />
+		<md-input-container class="md-block">
+        	<label>{{item.meta_value}}</label>
+        	<ANY ng-switch="item.meta_key">
+			  	<ANY ng-switch-when="text"><input name="meta_value" ng-model="service.metas[item.id].meta_value" required /></ANY>
+			  	<ANY ng-switch-when="number"><input type="number" name="meta_value" ng-model="service.metas[item.id].meta_value" required/></ANY>
+			  	<ANY ng-switch-when="textarea"><textarea name="meta_value" ng-model="service.metas[item.id].meta_value" required></textarea></ANY>
+			  	<ANY ng-switch-when="select">
+			  		<md-select name="type" name="meta_value" ng-model="service.metas[item.id].meta_value" required>
+			            <md-option value="{{option}}" ng-repeat="option in item.description">{{option}}</md-option>
+			        </md-select>
+			    </ANY>
+			  	<ANY ng-switch-default><input name="meta_value" ng-model="service.metas[item.id].meta_value" required /></ANY>
+			</ANY>
+			
+      	</md-input-container>
+	</div>
+</md-content>

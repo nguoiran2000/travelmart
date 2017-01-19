@@ -1,0 +1,51 @@
+<md-dialog aria-label="{{ utility.id ? 'Update ' + utility.title : 'Create Utility' }}">
+	<form ng-cloak name="utilityForm" role="form">
+
+		<md-toolbar>
+			<div class="md-toolbar-tools">
+				<h2>{{ utility.id ? 'Update ' + utility.title : 'Create Utility' }}</h2>
+				<span flex></span>
+				<md-button class="md-icon-button" ng-click="cancel()">
+					X
+				</md-button>
+			</div>
+		</md-toolbar>
+
+		<md-dialog-content>
+			<div class="md-dialog-content">
+
+            <md-autocomplete
+	            md-selected-item="ctrl.selectedItem"
+	            md-search-text="ctrl.searchText"
+	            md-items="item in ctrl.querySearch(ctrl.searchText)"
+	            md-item-text="item.title"
+	            md-min-length="0"
+	            placeholder="Utility?"
+	            ng-disabled="loading"
+	            md-selected-item-change="utility.meta_value = item.id">
+	          <md-item-template>
+	            <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.title}}</span>
+	          </md-item-template>
+	          <md-not-found>
+	            No Utilities matching "{{ctrl.searchText}}" were found.
+	          </md-not-found>
+	        </md-autocomplete>
+
+				<md-input-container class="md-block">
+					<label>Description</label>
+					<textarea name="description" ng-model="utility.description" rows="5"></textarea>
+				</md-input-container>
+
+			</div>
+		</md-dialog-content>
+
+		<md-dialog-actions layout="row">
+			<span flex></span>
+			<div confirm-delete on-confirm="delete(utility.id)" ng-show="utility.id"></div>
+			<md-button ng-click="utilityForm.$valid && edit(utility)">
+				Save
+			</md-button>
+		</md-dialog-actions>
+
+	</form>
+</md-dialog>
